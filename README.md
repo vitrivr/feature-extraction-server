@@ -18,6 +18,11 @@ curl -X POST -H "Content-Type: application/json" -d '{"image": "<base64-encoded-
 
 ### Server Side
 
+Install the required packages:
+```bash
+pip install -r environment.yml
+```
+
 To run the server, simply run app.py:
 
 ```bash
