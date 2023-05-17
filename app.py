@@ -43,6 +43,8 @@ def extract():
                 return_list = False
             images = []
             for img_string in image_strs:
+                if img_string.startswith('data:image'):
+                    img_string = img_string.split(',', 1)[1]
                 img_data = base64.b64decode(img_string)
                 image = Image.open(io.BytesIO(img_data))
                 if image.mode != "RGB":
@@ -81,7 +83,7 @@ def extract():
         extraction = extract(data, extraction_args)
         if not return_list:
             extraction = extraction[0]
-        return jsonify({'message': extraction})
+        return jsonify(extraction)
 
     except Exception as e:
         return jsonify({'error': str(e)}), 400

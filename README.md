@@ -6,7 +6,7 @@ This server accepts both images and text as input and performs various AI tasks,
 
 ### Client Side
 
-To use the server, send a POST request to the `/extract` endpoint with a JSON body. The JSON should have a key of 'image' or 'text' containing base64 encoded image strings or text strings respectively. These can be single strings or lists of strings. The server will return a single response or a list of responses that correspond to the input data.
+To use the server, send a POST request to the `/extract` endpoint with a JSON body. The JSON should have a key of 'image' or 'text' containing base64 encoded image strings or text strings respectively. The image can be encoded directly or have a data URL prefix (for example: "data:image/png;base64,iVBORw0KGgoA...") These can be single strings or lists of strings. The server will return a single response or a list of responses that correspond to the input data. Note that depending on the task or on additional arguments (see below) each element could itself be a list.
 
 It can optionally contain 'task' (default: 'caption') to specify the task, 'model' to specify the model, and 'extraction_args' to specify any additional arguments.
 

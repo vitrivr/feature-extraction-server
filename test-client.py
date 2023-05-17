@@ -16,7 +16,7 @@ for path in paths:
 data = {'task': 'caption','image': images}
 
 # Send the POST request
-response = requests.post('http://localhost:5000/', json=data)
+response = requests.post('http://localhost:5000/extract', json=data)
 
 # Print the response
 print(response.json())
