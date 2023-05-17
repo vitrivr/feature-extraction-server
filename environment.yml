@@ -1,0 +1,6 @@
+transformers
+pillow
+requests
+torch
+torchvision
+flask
