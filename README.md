@@ -47,7 +47,8 @@ def extract(data, extraction_args):
     pass
 ```
 Then, you can specify 'classify' as the task and 'my_model' as the model in your POST request to the /extract endpoint.
-API Endpoints
+
+## API Endpoints
 
 - **POST /extract**: Perform extraction with the specified or default task and model. Accepts 'image' or 'text' for data, and optionally 'task', 'model', and 'inference_args' in the JSON body. The 'image' or 'text' can be a single string or a list of strings. The response will be a single string or a list of strings that correspond to the input data.
 
