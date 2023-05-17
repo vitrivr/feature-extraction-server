@@ -6,7 +6,7 @@ This server accepts both images and text as input and performs various AI tasks,
 
 ### Client Side
 
-To use the server, send a POST request to the `/extract` endpoint with a JSON body. The JSON should have a key of 'image' or 'text' containing base64 encoded image strings or text strings respectively. The image can be encoded directly or have a data URL prefix (for example: "data:image/png;base64,iVBORw0KGgoA...") These can be single strings or lists of strings. The server will return a single response or a list of responses that correspond to the input data. Note that depending on the task or on additional arguments (see below) each element could itself be a list.
+To use the server, send a POST request to the `/extract` endpoint with a JSON body. The JSON should have a key of 'image' or 'text' containing base64 encoded image strings or text strings respectively. The image can be encoded directly or have a data URL prefix (for example: `data:image/png;base64,iVBORw0KGgoA...`) These can be single strings or lists of strings. The server will return a single response or a list of responses that correspond to the input data. Note that depending on the task or on additional arguments (see below) each element could itself be a list.
 
 It can optionally contain 'task' (default: 'caption') to specify the task, 'model' to specify the model, and 'extraction_args' to specify any additional arguments.
 
@@ -30,7 +30,7 @@ The server will start running on localhost on port 5000.
 
 The server is designed to be easily extensible with new tasks and models. To add a new task or model, follow these steps:
 
-1. **Add a new task**: To add a new task, create a new directory with the task name in the same directory as app.py. In this new directory, add a Python file for each model you want to add to the task.
+1. **Add a new task**: To add a new task, create a new directory with the task name in the same directory as app.py. In this new directory, add a Python file for each model you want to add to the task. Make sure to include an `__init__.py` file that has a global variable called `default_model` of type string. 
 
 2. **Add a new model to an existing task**: To add a new model to an existing task, simply add a new Python file in the corresponding task directory. The Python file should define an extract function that takes in data and extraction arguments and returns the extraction result.
 
