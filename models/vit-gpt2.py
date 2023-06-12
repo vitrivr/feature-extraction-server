@@ -4,6 +4,7 @@
 import torch
 from PIL import Image
 from transformers import VisionEncoderDecoderModel, ViTImageProcessor, AutoTokenizer
+from utils import batch
 
 # Load the model, tokenizer and feature extractor outside the endpoint
 model = VisionEncoderDecoderModel.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
@@ -16,10 +17,6 @@ model.to(device)
 # Default values for max_length and num_beams
 defaults = {}  #for more info on these args (and additional args), see https://huggingface.co/docs/transformers/main_classes/text_generation
 
-def batch(iterable, n=1):
-    l = len(iterable)
-    for ndx in range(0, l, n):
-        yield iterable[ndx:min(ndx + n, l)]
 
 def caption(image, inference_args={}):
     pixel_values = feature_extractor(images=image, return_tensors="pt").pixel_values
@@ -28,8 +25,8 @@ def caption(image, inference_args={}):
     # Set defaults if not provided
     args = defaults.copy()
     args.update(inference_args)
-
-    output_ids = model.generate(pixel_values, **args)
+    with torch.no_grad():
+        output_ids = model.generate(pixel_values, **args)
     preds = tokenizer.batch_decode(output_ids, skip_special_tokens=True)
     preds = [pred.strip() for pred in preds]
     return list(batch(preds, len(preds)//len(image)))

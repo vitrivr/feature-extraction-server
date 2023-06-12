@@ -30,6 +30,6 @@ for task in response.json()['tasks']:
 # print(response.json())
 
 # Send the POST request
-response = requests.post('http://localhost:5000/extract', json={'task': 'conditional_caption','image': images, "text": "A photograph"})
+response = requests.post('http://localhost:5000/extract', json={'task': 'conditional_caption', 'model': 'mplug-owl-llama-7b','image': images, "text": "What is depicted in this photograph?"})
 # Print the response
 print(response.json())
