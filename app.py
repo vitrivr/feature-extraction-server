@@ -5,17 +5,15 @@ from PIL import Image
 from importlib import import_module
 from tasks import tasks, default_models
 
-app = Flask(__name__)
+application = Flask(__name__)
 
-
-# Define a list of available tasks
 default_task = 'caption'
 
-@app.route('/tasks', methods=['GET'])
+@application.route('/tasks', methods=['GET'])
 def get_tasks():
     return jsonify({'tasks': list(tasks)})
 
-@app.route('/models/<task>', methods=['GET'])
+@application.route('/models/<task>', methods=['GET'])
 def get_models(task):
     if task not in tasks:
         return jsonify({'error': 'Invalid task'}), 400
@@ -31,7 +29,7 @@ def get_models(task):
     return jsonify({'models': models})
 
 
-@app.route('/extract', methods=['POST'])
+@application.route('/extract', methods=['POST'])
 def extract():
     try:
         # Get the task
@@ -62,4 +60,4 @@ def extract():
 
 if __name__ == '__main__':
     from werkzeug.serving import run_simple
-    run_simple('localhost', 5000, app)
+    run_simple('localhost', 5000, application)
