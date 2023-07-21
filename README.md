@@ -5,18 +5,75 @@ This server accepts both images and text as input and performs various AI tasks,
 
 ## Server Side
 
-In order to perform image_captioning or other tasks, the server must first be started. As a prerequisite, install the required packages:
-```bash
-pip install -r environment.txt
-```
+### Run the Server from Source
 
-To run the server, simply run app.py:
+1. **Clone the Repository**
+2. **Install Python 3.11**
+3. **Install the Required Packages:**
+    ```bash
+    pip install -r environment.txt
+    ```
+4. **Run the Server:**
 
-```bash
-python app.py
-```
+    To run the server in development, simply run app.py:
+
+    ```bash
+    python feature_extraction_server/app.py
+    ```
+
+    Otherwise use a WSGI server such as gunicorn:
+
+    ```bash
+    pip install gunicorn
+    cd feature_extraction_server
+    gunicorn -b :5000 --timeout 600 app:application
+    ```
+    Make sure to set the timeout very long, since the first time a model executes it may need to download many files.
 
 The server will start running on localhost on port 5000.
+
+
+### Run the Server with Docker
+
+Follow these steps to run the server using Docker:
+
+1. **Install Docker:**
+
+   You need to have Docker installed on your machine. You can download Docker Desktop for Mac or Windows [here](https://www.docker.com/products/docker-desktop). For Linux users, Docker Engine is the appropriate version, and the installation instructions vary by distribution.
+
+2. **Pull the Docker Image:**
+
+   Pull the Docker image from Docker Hub with the following command:
+
+   ```bash
+   docker pull faberf/featureextractionserver
+   ```
+
+3. **Run the Docker Image:**
+
+   After pulling the image, you can run it using the following command:
+
+   ```bash
+   docker run -it -e WORKERS=1 -p 5000:5000 faberf/featureextractionserver
+   ```
+   
+   This command will start a Docker container from the image and map port 5000 of your machine to port 5000 of the Docker container. Optionally you can bind the `/root/.cache` directory to your local `.cache` directory in order to persist the downloaded machine learning models between runs (this saves time).
+
+   ```bash
+   docker run -it -e WORKERS=1 -p 5000:5000 -v ~/.cache:/root/.cache faberf/featureextractionserver
+   ```
+
+4. **Access the Server:**
+
+   You should now be able to access the server at `http://localhost:5000`. If you are using Docker Toolbox (generally for older systems), the Docker IP will likely be something other than `localhost`, typically `192.168.99.100`. In this case, the server will be accessible at `http://192.168.99.100:5000`.
+
+Note: To stop the Docker container, press `CTRL + C` in the terminal window. If that does not work, open a new terminal window and run `docker ps` to get the `CONTAINER_ID`, and then run `docker stop CONTAINER_ID` to stop the container. 
+
+Note: If the server crashes, then it likely ran out of memory. If you're running on Docker Desktop, you can increase the memory allocated to Docker in Docker's preferences:
+   - For Mac: Docker menu > Preferences > Resources > Memory
+   - For Windows: Docker menu > Settings > Resources > Memory
+
+32 GB is a good amount. This will only work if your host machine has enough free memory.
 
 
 ## Client Side

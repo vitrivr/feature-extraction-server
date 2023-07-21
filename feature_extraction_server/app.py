@@ -64,5 +64,12 @@ def extract():
         return jsonify({'error': str(e)}), 400
 
 if __name__ == '__main__':
+    from argparse import ArgumentParser
+    ap = ArgumentParser()
+    ap.add_argument('-p', '--port', default=5000, type=int, help='Port to run the server on')
+    ap.add_argument('-ho', '--host', default='localhost', type=str, help='Host to run the server on')
+    args = ap.parse_args()
+    port = args.port
+    host = args.host
     from werkzeug.serving import run_simple
-    run_simple('localhost', 5000, application)
+    run_simple(host, port, application)

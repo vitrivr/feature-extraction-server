@@ -33,7 +33,7 @@ class TestImageCaptioningAPI(unittest.TestCase):
         response = requests.get(f'{self.base_url}/tasks')
 
         # Check status code
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.json())
 
         # Check response body
         tasks = response.json()
@@ -50,7 +50,7 @@ class TestImageCaptioningAPI(unittest.TestCase):
     #     response = requests.get(f'{self.base_url}/models/{task}')
 
     #     # Check status code
-    #     self.assertEqual(response.status_code, 200)
+    #     self.assertEqual(response.status_code, 200, response.json())
 
     #     # Check response body
     #     models = response.json()
@@ -73,7 +73,7 @@ class TestImageCaptioningAPI(unittest.TestCase):
         response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
         
         # Check status code
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.json())
         
         # Check response body
         response_data = response.json()
@@ -96,7 +96,7 @@ class TestImageCaptioningAPI(unittest.TestCase):
         response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
         
         # Check status code
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.json())
         
         # Check response body
         response_data = response.json()
@@ -123,7 +123,7 @@ class TestImageCaptioningAPI(unittest.TestCase):
         response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
         
         # Check status code
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.json())
         
         # Check response body
         response_data = response.json()
@@ -145,7 +145,7 @@ class TestImageCaptioningAPI(unittest.TestCase):
         response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
         
         # Check status code
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.json())
         
         # Check response body
         response_data = response.json()
@@ -171,7 +171,7 @@ class TestImageCaptioningAPI(unittest.TestCase):
         response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
         
         # Check status code
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.json())
         
         # Check response body
         response_data = response.json()
@@ -197,7 +197,7 @@ class TestImageCaptioningAPI(unittest.TestCase):
         response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
         
         # Check status code
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.json())
         
         # Check response body
         response_data = response.json()
@@ -214,7 +214,7 @@ class TestImageCaptioningAPI(unittest.TestCase):
         response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
         
         # Check status code
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.json())
         
         # Check response body
         response_data = response.json()
@@ -237,7 +237,7 @@ class TestImageCaptioningAPI(unittest.TestCase):
         response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
         
         # Check status code
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.json())
         
         # Check response body
         response_data = response.json()
@@ -261,7 +261,7 @@ class TestImageCaptioningAPI(unittest.TestCase):
         response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
         
         # Check status code
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.json())
         
         # Check response body
         response_data = response.json()
@@ -291,7 +291,7 @@ class TestImageCaptioningAPI(unittest.TestCase):
         response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
         
         # Check status code
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 200, response.json())
         
         # Check response body
         response_data = response.json()
