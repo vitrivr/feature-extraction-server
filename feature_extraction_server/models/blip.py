@@ -12,23 +12,23 @@ defaults = {}
 
 
 
-def caption(image, inference_args={}):
+def image_captioning(image, config={}):
     # Set defaults if not provided
     args = defaults.copy()
-    args.update(inference_args)
+    args.update(config)
     
     inputs = processor(image, return_tensors="pt")
     inputs = {k: v.to(model.device) for k, v in inputs.items()}
     with torch.no_grad():
-        output_ids = model.generate(**inputs, **inference_args)
+        output_ids = model.generate(**inputs, **config)
     preds = processor.batch_decode(output_ids, skip_special_tokens=True)
     preds = [pred.strip() for pred in preds]
     return list(batch(preds, len(preds)//len(image)))
 
-def conditional_caption(image, text, inference_args={}):
+def conditional_image_captioning(image, text, config={}):
     # Set defaults if not provided
     args = defaults.copy()
-    args.update(inference_args)
+    args.update(config)
     
     inputs = processor(image, text=[text]*len(image), return_tensors="pt")
     inputs = {k: v.to(model.device) for k, v in inputs.items()}

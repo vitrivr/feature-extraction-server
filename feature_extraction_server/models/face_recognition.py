@@ -1,0 +1,9 @@
+import face_recognition
+
+def face_embedding(image, config={}):
+    result = []
+    for img in image:
+        boxes = face_recognition.face_locations(img, model=config["detection_method"])
+        encodings = face_recognition.face_encodings(img, boxes)
+        result.append(encodings)
+    return result

@@ -11,22 +11,25 @@ default_task = 'caption'
 
 @application.route('/tasks', methods=['GET'])
 def get_tasks():
-    return jsonify({'tasks': list(tasks)})
+    return jsonify(list(tasks))
 
-@application.route('/models/<task>', methods=['GET'])
-def get_models(task):
-    if task not in tasks:
-        return jsonify({'error': 'Invalid task'}), 400
+# @application.route('/models/<task>', methods=['GET'])
+# def get_models(task):
+#     if task not in tasks:
+#         return jsonify({'error': 'Invalid task'}), 400
 
-    models_dir = os.path.join(os.getcwd(), "models")
-    models = []
-    for name in os.listdir(models_dir):
-        if os.path.isfile(os.path.join(models_dir, name)) and name.endswith('.py') and name != '__init__.py':
-            module = import_module(f'models.{name[:-3]}')
-            if task in module.__dict__:
-                models.append(name[:-3])
+#     models_dir = os.path.join(os.getcwd(), "feature_extraction_server/models")
+#     models = []
+#     for name in os.listdir(models_dir):
+#         if os.path.isfile(os.path.join(models_dir, name)) and name.endswith('.py') and name != '__init__.py':
+#             try:
+#                 module = import_module(f'models.{name[:-3]}')
+#                 if task in module.__dict__:
+#                     models.append(name[:-3])
+#             except Exception as e:
+#                 pass
 
-    return jsonify({'models': models})
+#     return jsonify(models)
 
 
 @application.route('/extract', methods=['POST'])
@@ -34,7 +37,6 @@ def extract():
     try:
         # Get the task
         task = request.json.get('task', default_task)
-        
         if not task in tasks:
             raise Exception(f'Task {task} not found')
         # Check if model is in the request
@@ -48,14 +50,17 @@ def extract():
         try:
             model_module = import_module(f'models.{model_name}')
             extract = tasks[task](getattr(model_module, task))
-        except ImportError:
+        except ImportError as e:
             return jsonify({'error': 'Model not found'}), 400
         except AttributeError:
             return jsonify({'error': f'extract function not found in the {model_name} module'}), 400
         
-        return jsonify(extract(**kwargs))
+        response = jsonify(extract(**kwargs))
+        print(response.get_data())
+        return response
 
     except Exception as e:
+        print(e)
         return jsonify({'error': str(e)}), 400
 
 if __name__ == '__main__':

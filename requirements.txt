@@ -7,3 +7,5 @@ flask
 sentencepiece
 soundfile
 librosa
+timm
+easyocr

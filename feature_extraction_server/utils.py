@@ -29,6 +29,35 @@ def prepare_text(text):
         return_list = False
     return text, return_list
 
+def prepare_multiple(**dict):
+    text = dict.get('text', None)
+    images = dict.get('image', None)
+    audio = dict.get('audio', None)
+    
+    output = {}
+    return_list = False
+    
+    if text:
+        text, return_list_text = prepare_text(text)
+        output['text'] = text
+        return_list = return_list or return_list_text
+    if images:
+        images, return_list_images = prepare_images(images)
+        output['image'] = images
+        return_list = return_list or return_list_images
+    if audio:
+        audio, return_list_audio = prepare_audio(audio)
+        output['audio'] = audio
+        return_list = return_list or return_list_audio
+    
+    max_len = max([len(output[key]) for key in output])
+    
+    for key in output:
+        factor = max_len // len(output[key])
+        output[key] = output[key] * factor
+    
+    return output, return_list
+
 def batch(iterable, n=1):
     l = len(iterable)
     for ndx in range(0, l, n):

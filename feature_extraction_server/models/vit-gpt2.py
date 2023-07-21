@@ -18,13 +18,13 @@ model.to(device)
 defaults = {}  #for more info on these args (and additional args), see https://huggingface.co/docs/transformers/main_classes/text_generation
 
 
-def caption(image, inference_args={}):
+def image_captioning(image, config={}):
     pixel_values = feature_extractor(images=image, return_tensors="pt").pixel_values
     pixel_values = pixel_values.to(device)
 
     # Set defaults if not provided
     args = defaults.copy()
-    args.update(inference_args)
+    args.update(config)
     with torch.no_grad():
         output_ids = model.generate(pixel_values, **args)
     preds = tokenizer.batch_decode(output_ids, skip_special_tokens=True)
