@@ -37,6 +37,7 @@ import librosa
 model = whisper.load_model("base")
 
 def automated_speech_recognition(audio, config={}):
+    audio = [a.to_numpy() for a in audio]
     results = []
     for audio_sample_array, audio_sampling_rate in audio:
         # if the audio is stereo, convert it to mono

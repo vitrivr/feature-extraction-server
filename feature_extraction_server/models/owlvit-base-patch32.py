@@ -5,4 +5,4 @@ detector = pipeline(model=checkpoint, task="zero-shot-object-detection")
 
 
 def zero_shot_object_detection(image, classes, config={}):
-    return detector(image, candidate_labels=[classes]*len(image), **config)
+    return detector(list(map(lambda x: x.to_numpy(), image)), candidate_labels=[classes]*len(image), **config)

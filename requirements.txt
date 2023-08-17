@@ -10,3 +10,6 @@ librosa
 timm
 easyocr
 openai-whisper
+python-decouple
+pytest
+psutil

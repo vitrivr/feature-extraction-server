@@ -1,6 +1,6 @@
 import torch
 from transformers import Blip2Processor, Blip2ForConditionalGeneration, Blip2VisionModel, Blip2Model
-from utils import batch
+from feature_extraction_server.utils import batch
 
 defaults = {}
 
@@ -19,7 +19,7 @@ def conditional_image_captioning(image, text, config={}):
     args = defaults.copy()
     args.update(config)
     
-    inputs = processor(images=image, text=text, return_tensors="pt")
+    inputs = processor(images=list(map(lambda x: x.to_numpy(), image)), text=text, return_tensors="pt")
     inputs = {k: v.to(condgenmodel.device) for k, v in inputs.items()}
     with torch.no_grad():
         output_ids = condgenmodel.generate(**inputs,  **args)

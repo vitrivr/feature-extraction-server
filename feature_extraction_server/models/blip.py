@@ -1,8 +1,7 @@
-import utils
 from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
 import torch
-from utils import batch
+from feature_extraction_server.utils import batch
 
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
 model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
@@ -16,8 +15,7 @@ def image_captioning(image, config={}):
     # Set defaults if not provided
     args = defaults.copy()
     args.update(config)
-    
-    inputs = processor(image, return_tensors="pt")
+    inputs = processor(list(map(lambda x: x.to_numpy(), image)), return_tensors="pt")
     inputs = {k: v.to(model.device) for k, v in inputs.items()}
     with torch.no_grad():
         output_ids = model.generate(**inputs, **config)
@@ -30,7 +28,7 @@ def conditional_image_captioning(image, text, config={}):
     args = defaults.copy()
     args.update(config)
     
-    inputs = processor(image, text=[text]*len(image), return_tensors="pt")
+    inputs = processor(list(map(lambda x: x.to_numpy(), image)), text=text, return_tensors="pt")
     inputs = {k: v.to(model.device) for k, v in inputs.items()}
     with torch.no_grad():
         output_ids = model.generate(**inputs,  **args)

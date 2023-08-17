@@ -2,10 +2,10 @@
 FROM python:3.11.4-bookworm
 
 # Set the working directory in the container to /app
-WORKDIR /feature_extraction_server
+WORKDIR /app
 
 # Add the current directory contents into the container at /app
-ADD feature_extraction_server/ /feature_extraction_server
+ADD feature_extraction_server/ ./feature_extraction_server/
 ADD requirements.txt .
 
 # Install any needed packages specified in requirements.txt
@@ -22,7 +22,8 @@ EXPOSE 5000
 # Set default value for WORKERS environment variable
 ENV WORKERS=1
 
+
 # Run the command to start the server when the container launches
-CMD gunicorn -w ${WORKERS} -b :5000 --timeout 600 app:application
+CMD gunicorn -w ${WORKERS} -b :5000 --timeout 600 'feature_extraction_server.app:entrypoint()'
 
 # CMD ["python", "app.py", "--host", "0.0.0.0", "--port", "5000"]

@@ -1,6 +1,6 @@
 # Feature Extraction Server
 
-This server accepts both images and text as input and performs various AI tasks, such as image image_captioning. It uses a modular design that allows new tasks and models to be easily added. The purpose of this server is to maintain a uniform input / output specification for each AI task, regardless of the specifics of the model used. This allows models to be swapped more easily.
+This server can accept various media as input and performs various AI tasks, such as image captioning. It uses a modular design that allows new tasks and models to be easily added. The purpose of this server is to maintain a uniform input / output specification for each AI task, regardless of the specifics of the model used. This allows models to be swapped more easily.
 
 
 ## Server Side
@@ -18,7 +18,7 @@ This server accepts both images and text as input and performs various AI tasks,
     To run the server in development, simply run app.py:
 
     ```bash
-    python feature_extraction_server/app.py
+    python dev_server.py
     ```
 
     Otherwise use a WSGI server such as gunicorn:
@@ -26,7 +26,7 @@ This server accepts both images and text as input and performs various AI tasks,
     ```bash
     pip install gunicorn
     cd feature_extraction_server
-    gunicorn -b :5000 --timeout 600 app:application
+    gunicorn -b :5000 --timeout 600 'feature_extraction_server.app:entrypoint()'
     ```
     Make sure to set the timeout very long, since the first time a model executes it may need to download many files.
 
@@ -75,6 +75,36 @@ Note: If the server crashes, then it likely ran out of memory. If you're running
 
 32 GB is a good amount. This will only work if your host machine has enough free memory.
 
+### Configuring the Server
+
+- Log Level
+  - Either `DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`
+  - Command line argument `--log-level` available for development server
+  - Otherwise, set the environment variable `LOG_LEVEL`
+  - TODO: environment file
+  - Default is `INFO` as specified in the settings module
+- Log Path
+  - Where the log file is stored
+  - Command line argument `--log-path` available for development server
+  - Otherwise, set the environment variable `LOG_PATH`
+  - TODO: environment file
+  - Default is `default.log` as specified in the settings module
+- Default Task
+  - When no task is specified in a request, this setting is used
+  - Command line argument `--default-task` available for development server
+  - Otherwise, set the environment variable `DEFAULT_TASK`
+  - TODO: environment file
+  - Default is `image_captioning` as specified in the settings module
+- Port
+  - Used to specify a port 
+  - For the development server:
+    - Command line argument `--port` or `-p`
+    - Otherwise set the environment variable `PORT`
+    - TODO: environment file
+    - Default is `5000` as specified in app module
+   - For the Docker Image:
+      Use docker compose or docker run to route port 5000 to your desired port
+
 
 ## Client Side
 
@@ -83,7 +113,7 @@ To perform an AI Task, send a POST request to the `/extract` endpoint with a JSO
 Here is an example of how to caption an image using a curl command:
 
 ```bash
-curl -X POST -H "Content-Type: application/json" -d '{"image": "<base64-encoded-image>", "task": "caption", "model": "blip", "config": {"top_k":50}}' http://localhost:5000/extract
+curl -X POST -H "Content-Type: application/json" -d '{"image": "<base64-encoded-image>", "task": "image_captioning", "model": "blip", "config": {"top_k":50}}' http://localhost:5000/extract
 ```
 
 this returns 
@@ -120,7 +150,7 @@ This service allows you to use a text prompt to condition an image captioning ta
 | `model` | No | The model which should execute the captioning |
 | `config` | No | Any additional arguments (depending on the model) |
 
-The API responds with a list of strings that caption the image. These strings do not include the specified prefix. In **Batch Mode**, if the 'image' or 'text' key is set to a list of strings, the server will return a list of lists (one list for each image in the input).
+The API responds with a list of strings that caption the image. These strings do not include the specified prefix. In **Batch Mode**, if the 'image' or 'text' key is set to a list of strings, the server will return a list of lists (one list for each image / text in the input).
 
 
 ### Automated Speech Recognition
@@ -175,7 +205,7 @@ For example, if you want to add a new audio classification model, you might crea
 
 ```python
 def audio_classification(image, other_arg, more_args):
-    # Your model's image classification code here
+    # Your model's audio classification code here
     pass
 ```
 Of course, make sure to edit the tasks module if the task 'audio_classification' does not exist yet. 
@@ -184,7 +214,8 @@ After these steps, you can specify 'audio_classification' as the task and 'cool_
 ## API Endpoints
 
 - **POST /extract**: Perform extraction with the specified task (or default task) and model (or default model). All other arguments will be passed to the task wrapper which wraps the models functions.
-
+- **POST /load**: Load a model (or default model) in advance.
+- **POST /free**: Free memory from a model (or default model).
 - **GET /tasks**: Get a list of all available tasks.
 <!-- 
 - **GET /models/\<task>**: Get a list of all models available for the specified task. -->

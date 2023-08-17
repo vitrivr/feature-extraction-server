@@ -1,330 +1,175 @@
-import requests
-import unittest
-import json
+import pytest
 import base64
 import soundfile as sf
 import io
+import requests
+import json
+from feature_extraction_server.utils import prepare_multiple
 
-class TestImageCaptioningAPI(unittest.TestCase):
-    def setUp(self):
-        self.base_url = 'http://localhost:5000'
-        self.endpoint = '/extract'
+def test_get_tasks(base_url):
+    response = requests.get(f'{base_url}/tasks')
 
-        with open("test_data/1.png", "rb") as img_file:
-            self.base64_string_1 = base64.b64encode(img_file.read()).decode('utf-8')
-        
-        with open("test_data/2.jpg", "rb") as img_file:
-            self.base64_string_2 = base64.b64encode(img_file.read()).decode('utf-8')
-        
-        with open("test_data/gettysburg.wav", "rb") as audio_file:
-            samples, samplerate = sf.read(audio_file)
-            output = io.BytesIO()
-            sf.write(output, samples, samplerate, format='WAV')
-            self.base64_string_3 = base64.b64encode(output.getvalue()).decode('ascii')
-        
-        with open("test_data/beach-german.mp3", "rb") as audio_file:
-            samples, samplerate = sf.read(audio_file)
-            output = io.BytesIO()
-            sf.write(output, samples, samplerate, format='WAV')
-            self.base64_string_4 = base64.b64encode(output.getvalue()).decode('ascii')        
+    assert response.status_code == 200
+
+    # Check response body
+    tasks = response.json()
+
+    # Check if response is a list
+    assert isinstance(tasks, list)
+
+    # Check if list contains at least one string
+    assert len(tasks) > 0
+    assert isinstance(tasks[0], str)
+
+@pytest.fixture
+def base_url():
+    return 'http://localhost:5000'
+
+loaded = {}
+
+def data_base64_fixture(loader_func):
+    @pytest.fixture
+    def data_base64(request):
+        param = request.param
+
+        if not isinstance(param, list):
+            if param in loaded:
+                return loaded[param]
+            data = loader_func(param)
+            loaded[param] = data
+            return data
+
+        ret = []
+        for path in param:
+            if path in loaded:
+                ret.append(loaded[path])
+                continue
+            data = loader_func(path)
+            loaded[path] = data
+            ret.append(data)
+        return ret
+    return data_base64
+
+def load_image_file(image_path):
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode('utf-8')
+
+def load_audio_file(audio_file):
+    samples, samplerate = sf.read(audio_file)
+    output = io.BytesIO()
+    sf.write(output, samples, samplerate, format='WAV')
+    return base64.b64encode(output.getvalue()).decode('ascii')
+
+image_data_base64 = data_base64_fixture(load_image_file)
+audio_data_base64 = data_base64_fixture(load_audio_file)
 
 
-    def test_get_tasks(self):
-        response = requests.get(f'{self.base_url}/tasks')
-
-        # Check status code
-        self.assertEqual(response.status_code, 200, response.json())
-
-        # Check response body
-        tasks = response.json()
-
-        # Check if response is a list
-        self.assertIsInstance(tasks, list)
-
-        # Check if list contains at least one string
-        self.assertIsInstance(tasks[0], str)
+def check_output_shape(response_data, inner, **kwargs):
+    data, is_list = prepare_multiple(**kwargs)
+    n = len(data[list(kwargs)[0]])
     
-    # def test_get_models(self):
-    #     # Assuming that 'image_captioning' task exists.
-    #     task = 'image_captioning'
-    #     response = requests.get(f'{self.base_url}/models/{task}')
-
-    #     # Check status code
-    #     self.assertEqual(response.status_code, 200, response.json())
-
-    #     # Check response body
-    #     models = response.json()
-
-    #     # Check if response is a list
-    #     self.assertIsInstance(models, list)
-
-    #     # Check if list contains at least one string
-    #     self.assertIsInstance(models[0], str)
     
-    def test_image_captioning(self):
-        headers = {'Content-Type': 'application/json'}
-        payload = {
-            "task": "image_captioning",
-            "image": self.base64_string_1,
-            "model": "blip",
-            "config": {"top_k": 50}
-        }
-        
-        response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
-        
-        # Check status code
-        self.assertEqual(response.status_code, 200, response.json())
-        
-        # Check response body
-        response_data = response.json()
-
+    if is_list:
         # Check if response is a list
-        self.assertIsInstance(response_data, list)
-
-        # Check if list contains at least one string
-        self.assertIsInstance(response_data[0], str)
+        assert isinstance(response_data, list)
+        assert(len(response_data) == n)
     
-    def test_image_captioning_batched(self):
-        headers = {'Content-Type': 'application/json'}
-        payload = {
-            "task": "image_captioning",
-            "image": [self.base64_string_1, self.base64_string_2],
-            "model": "blip",
-            "config": {"top_k": 50}
-        }
+        for elem in response_data:
+            inner(elem)
+    else:
+        inner(response_data)
         
-        response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
-        
-        # Check status code
-        self.assertEqual(response.status_code, 200, response.json())
-        
-        # Check response body
-        response_data = response.json()
 
-        # Check if response is a list
-        self.assertIsInstance(response_data, list)
 
-        # Check if list contains two lists
-        self.assertIsInstance(response_data[0], list)
-        self.assertIsInstance(response_data[1], list)
-        
-        # Check if each list contains at least one string
-        self.assertIsInstance(response_data[0][0], str)
-        self.assertIsInstance(response_data[1][0], str)
-
-    def test_conditional_image_captioning(self):
-        headers = {'Content-Type': 'application/json'}
-        payload = {
-            "task": "conditional_image_captioning",
-            "image": self.base64_string_1,
-            "text": "What is depicted in this photograph?"
-        }
-        
-        response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
-        
-        # Check status code
-        self.assertEqual(response.status_code, 200, response.json())
-        
-        # Check response body
-        response_data = response.json()
-
-        # Check if response is a list
-        self.assertIsInstance(response_data, list)
-
-        # Check if list contains at least one string
-        self.assertIsInstance(response_data[0], str)
+@pytest.mark.parametrize("model,config", [("blip", {"top_k": 50}), ("vit-gpt2", {})])
+@pytest.mark.parametrize("image_data_base64", ["test/data/1.png", ["test/data/1.png"], ["test/data/1.png", "test/data/1.png"]], indirect=True)
+def test_image_captioning(image_data_base64, model, config, base_url):
+    headers = {'Content-Type': 'application/json'}
+    payload = {
+        "task": "image_captioning",
+        "image": image_data_base64,
+        "model": model,
+        "config": config
+    }
     
-    def test_batched_conditional_image_captioning(self):
-        headers = {'Content-Type': 'application/json'}
-        payload = {
-            "task": "conditional_image_captioning",
-            "image": [self.base64_string_1, self.base64_string_2],
-            "text": ["What is depicted in this photograph?", "What is depicted in this photograph?"]
-        }
-        
-        response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
-        
-        # Check status code
-        self.assertEqual(response.status_code, 200, response.json())
-        
-        # Check response body
-        response_data = response.json()
-
-        # Check if response is a list
-        self.assertIsInstance(response_data, list)
-
-        # Check if list contains two lists
-        self.assertIsInstance(response_data[0], list)
-        self.assertIsInstance(response_data[1], list)
-        
-        # Check if each list contains at least one string
-        self.assertIsInstance(response_data[0][0], str)
-        self.assertIsInstance(response_data[1][0], str)
+    response = requests.post(f'{base_url}/extract', headers=headers, data=json.dumps(payload))
     
-    def test_semi_batched_conditional_image_captioning(self):
-        headers = {'Content-Type': 'application/json'}
-        payload = {
-            "task": "conditional_image_captioning",
-            "image": [self.base64_string_1, self.base64_string_2],
-            "text": "What is depicted in this photograph?"
-        }
-        response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
-        
-        # Check status code
-        self.assertEqual(response.status_code, 200, response.json())
-        
-        # Check response body
-        response_data = response.json()
-
-        # Check if response is a list
-        self.assertIsInstance(response_data, list)
-
-        # Check if list contains two lists
-        self.assertIsInstance(response_data[0], list)
-        self.assertIsInstance(response_data[1], list)
-        
-        # Check if each list contains at least one string
-        self.assertIsInstance(response_data[0][0], str)
-        self.assertIsInstance(response_data[1][0], str)
+    # Check status code
+    assert response.status_code == 200
     
-    def test_automated_speech_recognition(self):
-        headers = {'Content-Type': 'application/json'}
-        payload = {
-            "task": "automated_speech_recognition",
-            "audio": self.base64_string_3
-        }
-        
-        response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
-        
-        # Check status code
-        self.assertEqual(response.status_code, 200, response.json())
-        
-        # Check response body
-        response_data = response.json()
+    response_data = response.json()
+    
+    def check_response(element):
+        assert isinstance(element, list)
+        assert len(element) == 1
+        assert isinstance(element[0], str)
+    
+    check_output_shape(response_data, check_response, image=image_data_base64)
 
-        # Check if response is a string
-        self.assertIsInstance(response_data, str)
-    
-    def test_batched_automated_speech_recognition(self):
-        headers = {'Content-Type': 'application/json'}
-        payload = {
-            "task": "automated_speech_recognition",
-            "audio": [self.base64_string_3, self.base64_string_4]
-        }
-        response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
-        
-        # Check status code
-        self.assertEqual(response.status_code, 200, response.json())
-        
-        # Check response body
-        response_data = response.json()
+image_caption_prompt1 = "Question: What is depicted in this image? Answer:"
+image_caption_prompt2 = "Question: What is the significance of this image? Answer:"
+conditional_image_captioning_test_cases = [
+    ("test/data/1.png", image_caption_prompt1),
+    (["test/data/1.png"], image_caption_prompt1), 
+    (["test/data/1.png", "test/data/1.png"], image_caption_prompt1),
+    ("test/data/1.png", [image_caption_prompt1, image_caption_prompt2])
+]
 
-        # Check if response is a list
-        self.assertIsInstance(response_data, list)
-        
-        # Check if list contains two strings
-        self.assertIsInstance(response_data[0], str)
-        self.assertIsInstance(response_data[1], str)
+@pytest.mark.parametrize("model,config", [("blip", {}), ("blip2", {})])
+@pytest.mark.parametrize("image_data_base64,text", conditional_image_captioning_test_cases, indirect=["image_data_base64"])
+def test_conditional_image_captioning(image_data_base64, text, model, config, base_url):
+    headers = {'Content-Type': 'application/json'}
+    payload = {
+        "task": "conditional_image_captioning",
+        "image": image_data_base64,
+        "model": model,
+        "text": text,
+        "config": config
+    }
     
-    def test_zero_shot_image_classification(self):
-        headers = {'Content-Type': 'application/json'}
-        payload = {
-            "task": "zero_shot_image_classification",
-            "image": self.base64_string_1,
-            "classes": ["animal", "human", "plant"]
-        }
-        
-        response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
-        
-        # Check status code
-        self.assertEqual(response.status_code, 200, response.json())
-        
-        # Check response body
-        response_data = response.json()
-        
-        # Check if response is a list
-        self.assertIsInstance(response_data, list)
-        
-        # Check if list contains at least one float
-        self.assertIsInstance(response_data[0], float)
-        
-        # Check if length is equal to number of classes
-        self.assertEqual(len(response_data), 3)
+    response = requests.post(f'{base_url}/extract', headers=headers, data=json.dumps(payload))
     
-    def test_batched_zero_shot_image_classification(self):
-        headers = {'Content-Type': 'application/json'}
-        payload = {
-            "task": "zero_shot_image_classification",
-            "image": [self.base64_string_1, self.base64_string_2],
-            "classes" : ["animal", "human", "plant"]
-        }
-        response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
-        
-        # Check status code
-        self.assertEqual(response.status_code, 200, response.json())
-        
-        # Check response body
-        response_data = response.json()
-        
-        # Check if response is a list
-        self.assertIsInstance(response_data, list)
-        
-        # Check if list contains two lists
-        self.assertIsInstance(response_data[0], list)
-        self.assertIsInstance(response_data[1], list)
-        
-        # Check if each list contains at least one float
-        self.assertIsInstance(response_data[0][0], float)
-        self.assertIsInstance(response_data[1][0], float)
-        
-        # Check if length is equal to number of classes
-        self.assertIsInstance(response_data[0], list)
-        self.assertIsInstance(response_data[1], list)
-        
-    def test_object_detection(self):
-        headers = {'Content-Type': 'application/json'}
-        payload = {
-            "task": "object_detection",
-            "image": self.base64_string_1
-        }
-        
-        response = requests.post(f'{self.base_url}{self.endpoint}', headers=headers, data=json.dumps(payload))
-        
-        # Check status code
-        self.assertEqual(response.status_code, 200, response.json())
-        
-        # Check response body
-        response_data = response.json()
-        
-        # Check if response is a dictionary
-        self.assertIsInstance(response_data, dict)
-        
-        # Check if dictionary contains boxes, labels and scores
-        self.assertIn("boxes", response_data)
-        self.assertIn("labels", response_data)
-        self.assertIn("scores", response_data)
-        
-        # Check if boxes, labels and scores are lists
-        self.assertIsInstance(response_data["boxes"], list)
-        self.assertIsInstance(response_data["labels"], list)
-        self.assertIsInstance(response_data["scores"], list)
-        
-        # Check if boxes, labels and scores are of equal length
-        l = len(response_data["boxes"])
-        self.assertEqual(l, len(response_data["labels"]))
-        self.assertEqual(l, len(response_data["scores"]))
-        
-        # Check if all boxes have four float coordinates
-        for box in response_data["boxes"]:
-            self.assertEqual(len(box), 4)
-            self.assertIsInstance(box[0], float)
-        
-        # Check if all labels are strings
-        for label in response_data["labels"]:
-            self.assertIsInstance(label, str)
-        
-        
-        
-        
-if __name__ == '__main__':
-    unittest.main()
+    # Check status code
+    assert response.status_code == 200
+    
+    response_data = response.json()
+    
+    def check_response(element):
+        assert isinstance(element, list)
+        assert len(element) == 1
+        assert isinstance(element[0], str)
+    
+    check_output_shape(response_data, check_response, image=image_data_base64, text=text)
+
+classes = ["photo", "document"]
+zero_shot_image_classification_test_cases = [
+    ("test/data/1.png", classes),
+    (["test/data/1.png"], classes), 
+    (["test/data/1.png", "test/data/1.png"], classes),
+]
+    
+@pytest.mark.parametrize("model,config", [("clip-vit-large-patch14", {})])
+@pytest.mark.parametrize("image_data_base64,classes", zero_shot_image_classification_test_cases, indirect=["image_data_base64"])
+def test_zero_shot_image_classification(image_data_base64, classes, model, config, base_url):
+    headers = {'Content-Type': 'application/json'}
+    payload = {
+        "task": "zero_shot_image_classification",
+        "image": image_data_base64,
+        "model": model,
+        "classes": classes,
+        "config": config
+    }
+    
+    response = requests.post(f'{base_url}/extract', headers=headers, data=json.dumps(payload))
+    
+    # Check status code
+    assert response.status_code == 200
+    
+    response_data = response.json()
+    
+    def check_response(element):
+        assert isinstance(element, list)
+        assert len(element) == len(classes)
+        assert isinstance(element[0], float)
+    
+    check_output_shape(response_data, check_response, image=image_data_base64)

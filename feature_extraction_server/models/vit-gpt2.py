@@ -4,7 +4,7 @@
 import torch
 from PIL import Image
 from transformers import VisionEncoderDecoderModel, ViTImageProcessor, AutoTokenizer
-from utils import batch
+from feature_extraction_server.utils import batch
 
 # Load the model, tokenizer and feature extractor outside the endpoint
 model = VisionEncoderDecoderModel.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
@@ -19,7 +19,7 @@ defaults = {}  #for more info on these args (and additional args), see https://h
 
 
 def image_captioning(image, config={}):
-    pixel_values = feature_extractor(images=image, return_tensors="pt").pixel_values
+    pixel_values = feature_extractor(images=list(map(lambda x: x.to_numpy(), image)), return_tensors="pt").pixel_values
     pixel_values = pixel_values.to(device)
 
     # Set defaults if not provided

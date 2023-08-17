@@ -1,25 +1,40 @@
+from feature_extraction_server.dataformat import *
 
-import base64
-import io
-from PIL import Image
-import soundfile as sf
+import psutil
+import os
+
+
+def get_memory_usage():
+    # Get the process id of the current process
+    pid = os.getpid()
+
+    # Create a Process object
+    current_process = psutil.Process(pid)
+
+    # Get the memory info of the current process
+    memory_info = current_process.memory_info()
+    
+    ret = ""
+     
+    ret += f"RSS (Resident Set Size): {memory_info.rss / (1024 ** 2):.2f} MB"
+    ret += '\n'
+    ret += f"VMS (Virtual Memory Size): {memory_info.vms / (1024 ** 2):.2f} MB"
+
+    return ret
 
 def prepare_images(images):
-    return_list = True
-    image_strs = images
-    if type(images) is str:
-        image_strs = [image_strs]
-        return_list = False
+    image_strs, return_list = prepare_text(images)
     images = []
     for img_string in image_strs:
-        if img_string.startswith('data:image'):
-            img_string = img_string.split(',', 1)[1]
-        img_data = base64.b64decode(img_string)
-        image = Image.open(io.BytesIO(img_data))
-        if image.mode != "RGB":
-            image = image.convert(mode="RGB")
-        images.append(image)
+        images.append(IImageFormat.from_data_url(img_string))
     return images, return_list
+
+def prepare_audio(audio_data_url):
+    audio_data, return_list = prepare_text(audio_data_url)
+    audio = []
+    for audio_string in audio_data:
+        audio.append(IAudioFormat.from_data_url(audio_string))
+    return audio, return_list
 
 def prepare_text(text):
     return_list = True
@@ -63,23 +78,11 @@ def batch(iterable, n=1):
     for ndx in range(0, l, n):
         yield iterable[ndx:min(ndx + n, l)]
 
-def prepare_audio(audio_data_url):
-    return_list = True
-    audio_data = audio_data_url
-    if type(audio_data_url) is str:
-        audio_data = [audio_data_url]
-        return_list = False
-    audio = []
-    for audio_string in audio_data:
-        if audio_string.startswith('data:audio'):
-            audio_string = audio_string.split(',', 1)[1]
-        # decode the base64 data
-        binary_data = base64.b64decode(audio_string)
+import itertools
 
-        # create a binary stream from the data
-        data_stream = io.BytesIO(binary_data)
-
-        # read the audio file from the stream
-        samples, sample_rate = sf.read(data_stream)
-        audio.append((samples, sample_rate))
-    return audio, return_list
+def warn_no_batch_mode(*args, **kwargs):
+    #iterate over args and kwargs values
+    for arg in itertools.chain(args, kwargs.values()):
+        if type(arg) is list and len(arg) > 1:
+            print("Warning: The model you are using does not support batch mode. This will be slow.")
+            break

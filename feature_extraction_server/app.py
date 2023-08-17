@@ -1,16 +1,20 @@
-import io, os
+from functools import wraps
 from flask import Flask, request, jsonify
-import base64
-from PIL import Image
-from importlib import import_module
-from tasks import tasks, default_models
+import logging
+from feature_extraction_server.tasks import tasks, default_models
+from feature_extraction_server.settings import LOG_LEVEL, LOG_PATH, DEFAULT_TASK
+from werkzeug.exceptions import BadRequest, NotFound
+from feature_extraction_server.ipc import ModelProcessManager
 
 application = Flask(__name__)
 
-default_task = 'caption'
+
+
+mpm = None
 
 @application.route('/tasks', methods=['GET'])
 def get_tasks():
+    logging.info('Endpoint /tasks called')
     return jsonify(list(tasks))
 
 # @application.route('/models/<task>', methods=['GET'])
@@ -32,44 +36,79 @@ def get_tasks():
 #     return jsonify(models)
 
 
-@application.route('/extract', methods=['POST'])
-def extract():
-    try:
-        # Get the task
-        task = request.json.get('task', default_task)
-        if not task in tasks:
-            raise Exception(f'Task {task} not found')
-        # Check if model is in the request
-        model_name = request.json.get('model', default_models[task])
-        
-        kwargs = {**request.json}
-        kwargs.pop('task', None)
-        kwargs.pop('model', None)
-        
-        # Load the module and import the extract function
+def get_model_name_and_task():
+    task = request.json.get('task', DEFAULT_TASK)
+    _validate_task(task)
+    model_name = request.json.get('model', default_models.get(task))
+    return model_name, task
+def handle_exceptions(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
         try:
-            model_module = import_module(f'models.{model_name}')
-            extract = tasks[task](getattr(model_module, task))
-        except ImportError as e:
-            return jsonify({'error': 'Model not found'}), 400
-        except AttributeError:
-            return jsonify({'error': f'extract function not found in the {model_name} module'}), 400
-        
-        response = jsonify(extract(**kwargs))
-        print(response.get_data())
-        return response
+            logging.info(f'Endpoint {request.path} called')
+            return func(*args, **kwargs)
+        except BadRequest as e:
+            logging.error(f"Bad request: {str(e)}")
+            return jsonify({'error': str(e)}), 400
+        except NotFound as e:
+            logging.error(f"Resource not found: {str(e)}")
+            return jsonify({'error': str(e)}), 404
+        except Exception as e:
+            logging.error(f"Unexpected error: {str(e)}")
+            return jsonify({'error': 'Unexpected error occurred'}), 500
+    return wrapper
 
-    except Exception as e:
-        print(e)
-        return jsonify({'error': str(e)}), 400
+@application.route('/extract', methods=['POST'])
+@handle_exceptions
+def extract():
+    model_name, task = get_model_name_and_task()
+    
+    kwargs = {**request.json}
+    kwargs.pop('task', None)
+    kwargs.pop('model', None)
+    
+    job_id = mpm.add_job(model_name, task, kwargs)
+    response = jsonify(mpm.get_result(model_name, job_id))
+    logging.info('Response sent')
+    logging.debug(f'Response: {response}')
 
-if __name__ == '__main__':
-    from argparse import ArgumentParser
-    ap = ArgumentParser()
-    ap.add_argument('-p', '--port', default=5000, type=int, help='Port to run the server on')
-    ap.add_argument('-ho', '--host', default='localhost', type=str, help='Host to run the server on')
-    args = ap.parse_args()
-    port = args.port
-    host = args.host
-    from werkzeug.serving import run_simple
-    run_simple(host, port, application)
+    return response
+
+@application.route('/load', methods=['POST'])
+@handle_exceptions
+def load():
+    model_name, _ = get_model_name_and_task()
+    mpm.start_process(model_name)
+
+@application.route('/free', methods=['POST'])
+@handle_exceptions
+def free():
+    model_name, _ = get_model_name_and_task()
+    mpm.remove_process(model_name)
+
+
+def _validate_task(task):
+    if task not in tasks:
+        logging.error(f"Task {task} not found")
+        raise NotFound(f"Task {task} not found")
+
+
+def entrypoint():
+    
+    
+    global mpm
+    mpm = ModelProcessManager()
+    
+    logging.basicConfig(level= LOG_LEVEL)
+    logger = logging.getLogger(__name__)
+
+    file_handler = logging.FileHandler(LOG_PATH)
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    
+    return application
+
+
+
+    
