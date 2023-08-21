@@ -28,7 +28,7 @@ def conditional_image_captioning(image, text, config={}):
     args = defaults.copy()
     args.update(config)
     
-    inputs = processor(list(map(lambda x: x.to_numpy(), image)), text=text, return_tensors="pt")
+    inputs = processor(list(map(lambda x: x.to_numpy(), image)), text=text, return_tensors="pt", padding=True)
     inputs = {k: v.to(model.device) for k, v in inputs.items()}
     with torch.no_grad():
         output_ids = model.generate(**inputs,  **args)

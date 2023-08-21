@@ -81,7 +81,7 @@ def check_output_shape(response_data, inner, **kwargs):
         
 
 
-@pytest.mark.parametrize("model,config", [("blip", {"top_k": 50}), ("vit-gpt2", {})])
+@pytest.mark.parametrize("model,config", [("blip", {"top_k": 50}), ("vit-gpt2", {}), ("blip2", {})])
 @pytest.mark.parametrize("image_data_base64", ["test/data/1.png", ["test/data/1.png"], ["test/data/1.png", "test/data/1.png"]], indirect=True)
 def test_image_captioning(image_data_base64, model, config, base_url):
     headers = {'Content-Type': 'application/json'}

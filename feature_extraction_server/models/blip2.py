@@ -30,3 +30,19 @@ def conditional_image_captioning(image, text, config={}):
     preds = processor.batch_decode(output_ids, skip_special_tokens=True)
     preds = [pred.strip() for pred in preds]
     return list(batch(preds, len(preds)//len(image)))
+
+
+def image_captioning(image, config):
+    # Set defaults if not provided
+    args = defaults.copy()
+    args.update(config)
+    
+    image_tensor = list(map(lambda x: x.to_numpy(), image))
+    
+    inputs = processor(images=image_tensor, return_tensors="pt", padding=True)
+    inputs = {k: v.to(condgenmodel.device) for k, v in inputs.items()}
+    with torch.no_grad():
+        output_ids = condgenmodel.generate(**inputs,  **args)
+    preds = processor.batch_decode(output_ids, skip_special_tokens=True)
+    preds = [pred.strip() for pred in preds]
+    return list(batch(preds, len(preds)//len(image)))
