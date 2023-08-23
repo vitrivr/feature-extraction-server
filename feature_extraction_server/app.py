@@ -2,13 +2,11 @@ from functools import wraps
 from flask import Flask, request, jsonify
 import logging
 from feature_extraction_server.tasks import tasks, default_models
-from feature_extraction_server.settings import LOG_LEVEL, LOG_PATH, DEFAULT_TASK
+import feature_extraction_server.settings as settings
 from werkzeug.exceptions import BadRequest, NotFound
 from feature_extraction_server.ipc import ModelProcessManager
 
 application = Flask(__name__)
-
-
 
 mpm = None
 
@@ -37,7 +35,7 @@ def get_tasks():
 
 
 def get_model_name_and_task():
-    task = request.json.get('task', DEFAULT_TASK)
+    task = request.json.get('task', settings.DEFAULT_TASK)
     _validate_task(task)
     model_name = request.json.get('model', default_models.get(task))
     return model_name, task
@@ -94,18 +92,20 @@ def _validate_task(task):
 
 
 def entrypoint():
-    
-    
     global mpm
-    mpm = ModelProcessManager()
-    
-    logging.basicConfig(level= LOG_LEVEL)
+    logging.basicConfig(level= settings.LOG_LEVEL)
     logger = logging.getLogger(__name__)
-
-    file_handler = logging.FileHandler(LOG_PATH)
+    
+    file_handler = logging.FileHandler(settings.LOG_PATH)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
+    
+    
+    logging.debug('Starting application')
+    mpm = ModelProcessManager()
+    
+    
     
     return application
 

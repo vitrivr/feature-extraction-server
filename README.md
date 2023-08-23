@@ -25,8 +25,7 @@ This server can accept various media as input and performs various AI tasks, suc
 
     ```bash
     pip install gunicorn
-    cd feature_extraction_server
-    gunicorn -b :5000 --timeout 600 'feature_extraction_server.app:entrypoint()'
+    gunicorn -b :5000 --timeout 600 --preload 'feature_extraction_server.app:entrypoint()'
     ```
     Make sure to set the timeout very long, since the first time a model executes it may need to download many files.
 

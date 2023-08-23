@@ -24,6 +24,6 @@ ENV WORKERS=1
 
 
 # Run the command to start the server when the container launches
-CMD gunicorn -w ${WORKERS} -b :5000 --timeout 600 'feature_extraction_server.app:entrypoint()'
+CMD gunicorn -w ${WORKERS} -b :5000 --timeout 600 --preload 'feature_extraction_server.app:entrypoint()'
 
 # CMD ["python", "app.py", "--host", "0.0.0.0", "--port", "5000"]
