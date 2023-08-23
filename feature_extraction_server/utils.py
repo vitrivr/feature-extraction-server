@@ -17,7 +17,7 @@ def get_memory_usage():
     ret = ""
      
     ret += f"RSS (Resident Set Size): {memory_info.rss / (1024 ** 2):.2f} MB"
-    ret += '\n'
+    ret += '\t'
     ret += f"VMS (Virtual Memory Size): {memory_info.vms / (1024 ** 2):.2f} MB"
 
     return ret

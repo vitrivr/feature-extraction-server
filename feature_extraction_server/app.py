@@ -46,14 +46,17 @@ def handle_exceptions(func):
             logging.info(f'Endpoint {request.path} called')
             return func(*args, **kwargs)
         except BadRequest as e:
-            logging.error(f"Bad request: {str(e)}")
-            return jsonify({'error': str(e)}), 400
+            msg = f"Bad request: {str(e)}"
+            logging.error(msg)
+            return jsonify({'error': msg}), 400
         except NotFound as e:
-            logging.error(f"Resource not found: {str(e)}")
-            return jsonify({'error': str(e)}), 404
+            msg = f"Resource not found: {str(e)}"
+            logging.error(f"msg")
+            return jsonify({'error': msg}), 404
         except Exception as e:
-            logging.error(f"Unexpected error: {str(e)}")
-            return jsonify({'error': 'Unexpected error occurred'}), 500
+            msg = f"Unexpected error: {str(e)}"
+            logging.error(msg)
+            return jsonify({'error': msg}), 500
     return wrapper
 
 @application.route('/extract', methods=['POST'])
@@ -77,12 +80,16 @@ def extract():
 def load():
     model_name, _ = get_model_name_and_task()
     mpm.start_process(model_name)
+    mpm.await_running(model_name)
+    return jsonify({'status': 'ok'})
 
 @application.route('/free', methods=['POST'])
 @handle_exceptions
 def free():
     model_name, _ = get_model_name_and_task()
     mpm.remove_process(model_name)
+    mpm.await_stopped(model_name)
+    return jsonify({'status': 'ok'})
 
 
 def _validate_task(task):

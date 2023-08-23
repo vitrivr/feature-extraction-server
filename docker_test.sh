@@ -44,6 +44,6 @@ sleep 10
 
 # Step 3: Execute the tests on the running container
 # You might need to adjust the path based on where your tests are located within the Docker image
-docker exec $CONTAINER_ID pytest ./test
+docker exec $CONTAINER_ID pytest ./test -o log_cli=true
 
 echo "Tests completed successfully!"
