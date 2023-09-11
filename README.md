@@ -15,7 +15,7 @@ This server can accept various media as input and performs various AI tasks, suc
     ```
 4. **Run the Server:**
 
-    To run the server in development, simply run app.py:
+    To run the server in development, simply run dev_server.py:
 
     ```bash
     python dev_server.py

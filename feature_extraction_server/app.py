@@ -71,7 +71,7 @@ def extract():
     job_id = mpm.add_job(model_name, task, kwargs)
     response = jsonify(mpm.get_result(model_name, job_id))
     logging.info('Response sent')
-    logging.debug(f'Response: {response}')
+    logging.debug(f'Response: {response.json}')
 
     return response
 
