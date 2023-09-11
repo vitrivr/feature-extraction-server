@@ -6,8 +6,8 @@ from transformers import CLIPModel
 from transformers import AutoTokenizer, AutoProcessor
 
 model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
-processor = AutoProcessor.from_pretrained("openai/clip-vit-base-patch32")
-tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-base-patch32")
+processor = AutoProcessor.from_pretrained("openai/clip-vit-large-patch14")
+tokenizer = AutoTokenizer.from_pretrained("openai/clip-vit-large-patch14")
 
 
 
