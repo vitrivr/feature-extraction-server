@@ -107,6 +107,7 @@ class ModelProcessManager:
             
             job_id, task, kwargs = next_job
             try:
+                logging.debug(f"Process {model_name} executing job {job_id} with task {task}")
                 base_function = getattr(module, task)
                 task_function = tasks[task](base_function)
                 ModelProcessManager.execute_job(job_id, task_function, kwargs, results)
@@ -116,9 +117,11 @@ class ModelProcessManager:
 
     @staticmethod
     def execute_job(job_id, function, kwargs, results):
+        logging.debug(f"Executing job {job_id}")
         try:
             result = function(**kwargs)
             results[job_id] = {"result": result}
+            logging.debug(f"Job {job_id} finished")
         except Exception as e:
             results[job_id] = {"error": e}
         
