@@ -5,10 +5,12 @@ from feature_extraction_server.tasks import tasks, default_models
 import feature_extraction_server.settings as settings
 from werkzeug.exceptions import BadRequest, NotFound
 from feature_extraction_server.ipc import ModelProcessManager
+import reprlib
 
 application = Flask(__name__)
 
 mpm = None
+representation = None
 
 @application.route('/tasks', methods=['GET'])
 def get_tasks():
@@ -71,7 +73,7 @@ def extract():
     job_id = mpm.add_job(model_name, task, kwargs)
     response = jsonify(mpm.get_result(model_name, job_id))
     logging.info('Response sent')
-    logging.debug(f'Response: {response.json}')
+    logging.debug(f'Response: {representation.repr(response.json)}')
 
     return response
 
@@ -99,7 +101,7 @@ def _validate_task(task):
 
 
 def entrypoint():
-    global mpm
+    global mpm, representation
     logging.basicConfig(level= settings.LOG_LEVEL)
     logger = logging.getLogger(__name__)
     
@@ -107,6 +109,10 @@ def entrypoint():
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
+    
+    representation = reprlib.Repr()
+    representation.maxlist = 4
+    representation.maxstring = 100
     
     
     logging.debug('Starting application')
