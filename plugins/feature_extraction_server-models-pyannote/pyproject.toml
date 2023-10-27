@@ -1,0 +1,18 @@
+[project]
+name = "feature_extraction_server-models-pyannote"
+version = "0.1.0"
+description = "pyannote model for FES."
+authors = [
+    {name = "Fynn Faber", email = "fynn.f.faber@proton.me"}
+]
+requires-python = ">=3.11"
+
+dependencies = [
+    "pyannote.audio"
+]
+
+[tool.flit.module]
+name = "feature_extraction_server.models.pyannote"
+
+[build]
+script = "flit build"

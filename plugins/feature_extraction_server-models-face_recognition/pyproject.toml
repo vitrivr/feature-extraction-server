@@ -1,0 +1,18 @@
+[project]
+name = "feature_extraction_server-models-face_recognition"
+version = "0.1.0"
+description = "face_recognition model for FES."
+authors = [
+    {name = "Fynn Faber", email = "fynn.f.faber@proton.me"}
+]
+requires-python = ">=3.11"
+
+dependencies = [
+    "face_recognition"
+]
+
+[tool.flit.module]
+name = "feature_extraction_server.models.face_recognition"
+
+[build]
+script = "flit build"

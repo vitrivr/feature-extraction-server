@@ -1,0 +1,19 @@
+[project]
+name = "feature_extraction_server-models-blip"
+version = "0.1.0"
+description = "Blip model for FES."
+authors = [
+    {name = "Fynn Faber", email = "fynn.f.faber@proton.me"}
+]
+requires-python = ">=3.11"
+
+dependencies = [
+    "torch",
+    "transformers"
+]
+
+[tool.flit.module]
+name = "feature_extraction_server.models.blip"
+
+[build]
+script = "flit build"

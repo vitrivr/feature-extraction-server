@@ -1,24 +1,33 @@
-import feature_extraction_server.app as app
-import feature_extraction_server.settings as settings
+import sys
+sys.path.append('./feature_extraction_server-core/') 
+import os
+
+for dir in os.listdir('./plugins/'):
+    sys.path.append(f'./plugins/{dir}/')
+
+from feature_extraction_server.core.components import LogServerComponent, SettingsManagerComponent
+from feature_extraction_server.flask.flask_app_component import InitializedFlaskAppComponent
+from feature_extraction_server.core.settings import StringSetting, IntegerSetting
+
+
+import logging
 
 if __name__ == '__main__':
     
-    from decouple import config
-    from argparse import ArgumentParser
+    LogServerComponent.get().configure_worker()
     
-    PORT = 5000
-    HOST = 'localhost'
-    
-    ap = ArgumentParser()
-    ap.add_argument('-p', '--port', type=int, help='Port to run the server on')
-    ap.add_argument('-ho', '--host', type=str, help='Host to run the server on')
-    
-    settings.add_args(ap)
-    args = ap.parse_args()
-    settings.adopt_args(args)
-    
-    PORT = args.port or config('PORT', default=PORT, cast=int)
-    HOST = args.host or config('HOST', default=HOST)
+    settings_manager = SettingsManagerComponent.get()
+    settings_manager.add_setting(StringSetting("HOST", default="localhost", description="The host to run the server on."))
+    settings_manager.add_setting(IntegerSetting("PORT", default=5000, description="The port to run the server on."))
     
     from werkzeug.serving import run_simple
-    run_simple(HOST, PORT, app.entrypoint())
+    flask_app = InitializedFlaskAppComponent.get()
+    
+    conf = settings_manager.get_config()
+    
+    logger = logging.getLogger(__name__)
+    logger.debug("Starting dev server")
+    for key, val in vars(conf).items():
+        logger.debug(f"{key}: {val}")
+    logger.info(f"Running dev server on {conf.HOST}:{conf.PORT}")
+    run_simple(conf.HOST, conf.PORT, flask_app)

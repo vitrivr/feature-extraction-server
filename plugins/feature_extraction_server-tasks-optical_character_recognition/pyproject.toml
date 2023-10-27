@@ -1,0 +1,17 @@
+[project]
+name = "feature_extraction_server-tasks-optical_character_recognition"
+version = "0.1.0"
+description = "Optical Character Recognition Task for FES."
+authors = [
+    {name = "Fynn Faber", email = "fynn.f.faber@proton.me"}
+]
+requires-python = ">=3.11"
+
+dependencies = [
+]
+
+[tool.flit.module]
+name = "feature_extraction_server.tasks.optical_character_recognition"
+
+[build]
+script = "flit build"

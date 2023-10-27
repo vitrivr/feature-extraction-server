@@ -4,7 +4,7 @@ import soundfile as sf
 import io
 import requests
 import json
-from feature_extraction_server.utils import prepare_multiple
+from feature_extraction_server.core.utils import prepare_multiple
 
 def test_get_tasks(base_url):
     response = requests.get(f'{base_url}/tasks')
@@ -170,6 +170,29 @@ def test_zero_shot_image_classification(image_data_base64, classes, model, confi
     def check_response(element):
         assert isinstance(element, list)
         assert len(element) == len(classes)
+        assert isinstance(element[0], float)
+    
+    check_output_shape(response_data, check_response, image=image_data_base64)
+
+@pytest.mark.parametrize("model,config", [("clip-vit-large-patch14", {})])
+@pytest.mark.parametrize("image_data_base64", ["test/data/1.png", ["test/data/1.png"], ["test/data/1.png", "test/data/1.png"]], indirect=True)
+def test_image_embedding(image_data_base64, model, config, base_url):
+    headers = {'Content-Type': 'application/json'}
+    payload = {
+        "task": "image_embedding",
+        "image": image_data_base64,
+        "model": model,
+        "config": config
+    }
+    
+    response = requests.post(f'{base_url}/extract', headers=headers, data=json.dumps(payload))
+    
+    assert response.status_code == 200
+    
+    response_data = response.json()
+    
+    def check_response(element):
+        assert isinstance(element, list)
         assert isinstance(element[0], float)
     
     check_output_shape(response_data, check_response, image=image_data_base64)

@@ -1,0 +1,17 @@
+[project]
+name = "feature_extraction_server-tasks-zero_shot_image_classification"
+version = "0.1.0"
+description = "Zero Shot Image Classification Task for FES."
+authors = [
+    {name = "Fynn Faber", email = "fynn.f.faber@proton.me"}
+]
+requires-python = ">=3.11"
+
+dependencies = [
+]
+
+[tool.flit.module]
+name = "feature_extraction_server.tasks.zero_shot_image_classification"
+
+[build]
+script = "flit build"
