@@ -17,17 +17,14 @@ if __name__ == '__main__':
     LogServerComponent.get().configure_worker()
     
     settings_manager = SettingsManagerComponent.get()
-    settings_manager.add_setting(StringSetting("HOST", default="localhost", description="The host to run the server on."))
-    settings_manager.add_setting(IntegerSetting("PORT", default=5000, description="The port to run the server on."))
+    hostsetting = StringSetting("HOST", default="localhost", description="The host to run the server on.")
+    portsetting = IntegerSetting("PORT", default=5000, description="The port to run the server on.")
+    settings_manager.add_setting(hostsetting)
+    settings_manager.add_setting(portsetting)
     
-    from werkzeug.serving import run_simple
     flask_app = InitializedFlaskAppComponent.get()
-    
-    conf = settings_manager.get_config()
     
     logger = logging.getLogger(__name__)
     logger.debug("Starting dev server")
-    for key, val in vars(conf).items():
-        logger.debug(f"{key}: {val}")
-    logger.info(f"Running dev server on {conf.HOST}:{conf.PORT}")
-    run_simple(conf.HOST, conf.PORT, flask_app)
+    logger.info(f"Running dev server on {hostsetting.get()}:{portsetting.get()}")
+    flask_app.run(host=hostsetting.get(), port=portsetting.get(), debug=True, use_reloader=False)

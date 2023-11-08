@@ -1,4 +1,3 @@
-installation_command = "pip install transformers torch"
 
 def load_model():
     global detector

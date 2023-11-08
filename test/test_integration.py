@@ -1,3 +1,10 @@
+import sys
+sys.path.append('./feature_extraction_server-core/') 
+import os
+
+for dir in os.listdir('./plugins/'):
+    sys.path.append(f'./plugins/{dir}/')
+
 import pytest
 import base64
 import soundfile as sf
@@ -23,7 +30,7 @@ def test_get_tasks(base_url):
 
 @pytest.fixture
 def base_url():
-    return 'http://localhost:5000'
+    return 'http://localhost:5000/legacy'
 
 loaded = {}
 
@@ -81,7 +88,7 @@ def check_output_shape(response_data, inner, **kwargs):
         
 
 
-@pytest.mark.parametrize("model,config", [("blip", {"top_k": 50}), ("vit-gpt2", {}), ("blip2", {})])
+@pytest.mark.parametrize("model,config", [("blip", {"top_k": 50}), ("vit_gpt2", {}), ("blip2", {})])
 @pytest.mark.parametrize("image_data_base64", ["test/data/1.png", ["test/data/1.png"], ["test/data/1.png", "test/data/1.png"]], indirect=True)
 def test_image_captioning(image_data_base64, model, config, base_url):
     headers = {'Content-Type': 'application/json'}
@@ -148,7 +155,7 @@ zero_shot_image_classification_test_cases = [
     (["test/data/1.png", "test/data/1.png"], classes),
 ]
     
-@pytest.mark.parametrize("model,config", [("clip-vit-large-patch14", {})])
+@pytest.mark.parametrize("model,config", [("clip_vit_large_patch14", {})])
 @pytest.mark.parametrize("image_data_base64,classes", zero_shot_image_classification_test_cases, indirect=["image_data_base64"])
 def test_zero_shot_image_classification(image_data_base64, classes, model, config, base_url):
     headers = {'Content-Type': 'application/json'}
@@ -174,7 +181,7 @@ def test_zero_shot_image_classification(image_data_base64, classes, model, confi
     
     check_output_shape(response_data, check_response, image=image_data_base64)
 
-@pytest.mark.parametrize("model,config", [("clip-vit-large-patch14", {})])
+@pytest.mark.parametrize("model,config", [("clip_vit_large_patch14", {})])
 @pytest.mark.parametrize("image_data_base64", ["test/data/1.png", ["test/data/1.png"], ["test/data/1.png", "test/data/1.png"]], indirect=True)
 def test_image_embedding(image_data_base64, model, config, base_url):
     headers = {'Content-Type': 'application/json'}

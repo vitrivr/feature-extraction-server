@@ -15,6 +15,7 @@ class Job:
         self._state = ExecutionState.JobState(self.id, execution_state)
     
     def start(self):
+        logger.debug(f"Job {self.id} starting")
         self._state.set_starting()
         self.model.add_job(self)
     
@@ -28,6 +29,7 @@ class Job:
                 time.sleep(check_interval)
     
     def run(self): 
+        logger.debug(f"Job {self.id} running")
         return self._state.wrap(self.task.get_function())(**self.kwargs)
 
 

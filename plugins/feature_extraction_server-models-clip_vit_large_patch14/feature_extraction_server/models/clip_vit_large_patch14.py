@@ -1,6 +1,3 @@
-installation_command = "pip install transformers torch"
-
-
 def load_model():
     global model, processor, tokenizer
     from transformers import CLIPModel

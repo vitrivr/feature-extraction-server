@@ -1,5 +1,3 @@
-installation_command = "pip install openai-whisper librosa numpy"
-
 def load_model():
     global librosa, np, model
     import whisper
