@@ -4,6 +4,9 @@ class LoadPluginFailedException(Exception):
 class LoadModelFailedException(Exception):
     pass
 
+class StartModelFailedException(Exception):
+    pass
+
 class TaskNotFoundException(Exception):
     pass
 
@@ -25,8 +28,8 @@ class JobExecutionException(Exception):
 class UninitializedModelException(Exception):
     pass
 
-class MissingConsumerTypeException(Exception):
-    pass
+# class MissingConsumerTypeException(Exception):
+#     pass
 
 class InvalidConsumerTypeException(Exception):
     pass    
@@ -47,4 +50,10 @@ class NoDefaultModelException(Exception):
     pass
 
 class NoDefaultTaskException(Exception):
+    pass
+
+class MissingTaskImplementationException(Exception):
+    pass
+
+class InvalidServiceException(Exception):
     pass

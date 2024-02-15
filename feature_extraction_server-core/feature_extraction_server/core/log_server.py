@@ -12,15 +12,18 @@ class LogServer:
     
     queue = None
     
-    def __init__(self, level, path) -> None:
-        self.queue = Queue()
+    def __init__(self, level, path, mp_manager) -> None:
+        self.queue = mp_manager.Queue()
         self.level = level
         self.path = path
         os.makedirs(os.path.dirname(path), exist_ok=True)
+    
         
     def listener_process(self):
         baselogger = logging.getLogger("feature_extraction_server")
         baselogger.setLevel(self.level)
+        
+        logging.getLogger('injector').setLevel(self.level)
         
         file_handler = logging.handlers.RotatingFileHandler(self.path, 'a', 300, 10)
         stream_handler = logging.StreamHandler()

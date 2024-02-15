@@ -1,5 +1,5 @@
 from feature_extraction_server.core.builders.model_builder import ModelBuilder
 from feature_extraction_server.core.builders.task_builder import TaskBuilder
-from feature_extraction_server.core.builders.startable_model_builder import StartableModelBuilder
+# from feature_extraction_server.core.builders.startable_model_builder import StartableModelBuilder
 from feature_extraction_server.core.builders.consumer_builder import ConsumerBuilder
 from feature_extraction_server.core.builders.job_builder import JobBuilder

@@ -119,7 +119,7 @@ The server is extensible through plugins. The core system uses namespace package
 
 1. `apis`
    
-   An api module must implement `add_routes(application_interface, flask_app)` and optionally `add_settings(settings_manager)`
+   An api module must implement `add_routes(extraction_backend, flask_app)` and optionally `add_settings(settings_manager)`
 2. `models`
    
    A model module must implement `load_model` and optionally `add_settings(settings_manager)`. In addition it may implement any task (naming a global function the same as a task). The consumer type can be set with a global string variable `consumer_type`.

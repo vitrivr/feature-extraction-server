@@ -1,9 +1,11 @@
-class Consumer:
+
+class Consumer():
     
-    def __init__(self, plugin, model, log_server):
-        self.plugin = plugin
+    def __init__(self, model):
         self.model = model
-        self.log_server = log_server
     
     def start(self):
-        return self.plugin.start(self.model, self.log_server)
+        pass
+    
+    def setup():
+        pass

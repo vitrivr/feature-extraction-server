@@ -1,0 +1,18 @@
+[project]
+name = "feature_extraction_server-models-easy_ocr"
+version = "0.1.0"
+description = "easyocr model for FES."
+authors = [
+    {name = "Fynn Faber", email = "fynn.f.faber@proton.me"}
+]
+requires-python = ">=3.11"
+
+dependencies = [
+    "easyocr"
+]
+
+[tool.flit.module]
+name = "feature_extraction_server.models.easy_ocr"
+
+[build]
+script = "flit build"

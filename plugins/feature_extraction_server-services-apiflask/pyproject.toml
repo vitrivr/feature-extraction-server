@@ -1,0 +1,18 @@
+[project]
+name = "feature_extraction_server-services-apiflask"
+version = "0.1.0"
+description = "Flask API for the FES."
+authors = [
+    {name = "Fynn Faber", email = "fynn.f.faber@proton.me"}
+]
+requires-python = ">=3.11"
+
+dependencies = [
+    "apiflask"
+]
+
+[tool.flit.module]
+name = "feature_extraction_server.services.flask_app"
+
+[build]
+script = "flit build"

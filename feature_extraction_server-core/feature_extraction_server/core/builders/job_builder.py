@@ -4,14 +4,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 class JobBuilder:
-    def __init__(self, model_builder, task_builder, execution_state):
-        self.model_builder = model_builder
-        self.task_builder = task_builder
+    def __init__(self, model_namespace, task_namespace, execution_state):
+        self.model_namespace = model_namespace
+        self.task_namespace = task_namespace
         self.execution_state = execution_state
     
     def from_task_and_model_name(self, task_name, model_name, kwargs):
-        model = self.model_builder.from_model_name(model_name)
-        task = self.task_builder.from_task_and_model_name(task_name, model_name)
+        model = self.model_namespace.instantiate_plugin(model_name)
+        task = self.task_namespace.instantiate_plugin(task_name)
         return Job(task=task, model=model, kwargs=kwargs, execution_state=self.execution_state)
     
     # def from_task_name(self, task_name, kwargs):

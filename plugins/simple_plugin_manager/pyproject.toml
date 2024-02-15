@@ -1,0 +1,20 @@
+[project]
+name = "simple_plugin_manager"
+version = "0.1.0"
+description = "Simple plugin manager."
+authors = [
+    {name = "Fynn Faber", email = "fynn.f.faber@proton.me"}
+]
+requires-python = ">=3.11"
+
+dependencies = [
+    "python-decouple>=3.8",
+    "argparse",
+    "tabulate"
+]
+
+[tool.flit.module]
+name = "simple_plugin_manager"
+
+[build]
+script = "flit build"

@@ -1,5 +1,6 @@
 # Use an official Python runtime as a parent image
-FROM python:3.11.4-bookworm
+#FROM python:3.11.4-bookworm
+FROM python:3.11.4-slim-bullseye
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -15,12 +16,12 @@ RUN apt-get update
 
 # Add the current directory contents into the container at /app
 COPY feature_extraction_server-core/ ./feature_extraction_server-core/
-COPY plugins_to_install/ ./plugins/
+COPY plugins/ ./plugins/
 
 
 # Install flit
 RUN pip install flit \
-    && pip install gunicorn
+    && pip install waitress
 
 
 
@@ -57,5 +58,12 @@ RUN apt-get clean \
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
 
+# # Create an empty file to tail
+# RUN touch /var/log/dummy.log
 
-CMD gunicorn -w ${NUMBER_OF_WORKERS} -b :5000 --timeout 600 --preload 'feature_extraction_server.flask.entrypoint:entrypoint()'
+# # Command to keep the container running
+# CMD tail -f /var/log/dummy.log
+
+CMD waitress-serve --host 0.0.0.0 --port 5000 --call feature_extraction_server.entrypoints.flask_app:create_app
+
+# CMD gunicorn -w ${NUMBER_OF_WORKERS} -b :5000 --timeout 600 --preload 'feature_extraction_server.entrypoints.flask_app:create_app()'

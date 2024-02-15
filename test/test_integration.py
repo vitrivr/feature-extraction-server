@@ -13,8 +13,8 @@ import requests
 import json
 from feature_extraction_server.core.utils import prepare_multiple
 
-def test_get_tasks(base_url):
-    response = requests.get(f'{base_url}/tasks')
+def test_tasks_list(base_url):
+    response = requests.get(f'{base_url}/tasks/list')
 
     assert response.status_code == 200
 
@@ -30,7 +30,7 @@ def test_get_tasks(base_url):
 
 @pytest.fixture
 def base_url():
-    return 'http://localhost:5000/legacy'
+    return 'http://localhost:5000/api'
 
 loaded = {}
 
@@ -93,13 +93,11 @@ def check_output_shape(response_data, inner, **kwargs):
 def test_image_captioning(image_data_base64, model, config, base_url):
     headers = {'Content-Type': 'application/json'}
     payload = {
-        "task": "image_captioning",
         "image": image_data_base64,
-        "model": model,
         "config": config
     }
     
-    response = requests.post(f'{base_url}/extract', headers=headers, data=json.dumps(payload))
+    response = requests.post(f'{base_url}/tasks/image_captioning/models/{model}/features', headers=headers, data=json.dumps(payload))
     
     # Check status code
     assert response.status_code == 200
@@ -111,7 +109,7 @@ def test_image_captioning(image_data_base64, model, config, base_url):
         assert len(element) == 1
         assert isinstance(element[0], str)
     
-    check_output_shape(response_data, check_response, image=image_data_base64)
+    check_output_shape(response_data["caption"], check_response, image=image_data_base64)
 
 image_caption_prompt1 = "Question: What is depicted in this image? Answer:"
 image_caption_prompt2 = "Question: What is the significance of this image? Answer:"
@@ -127,14 +125,12 @@ conditional_image_captioning_test_cases = [
 def test_conditional_image_captioning(image_data_base64, text, model, config, base_url):
     headers = {'Content-Type': 'application/json'}
     payload = {
-        "task": "conditional_image_captioning",
         "image": image_data_base64,
-        "model": model,
         "text": text,
         "config": config
     }
     
-    response = requests.post(f'{base_url}/extract', headers=headers, data=json.dumps(payload))
+    response = requests.post(f'{base_url}/tasks/conditional_image_captioning/models/{model}/features', headers=headers, data=json.dumps(payload))
     
     # Check status code
     assert response.status_code == 200
@@ -146,7 +142,7 @@ def test_conditional_image_captioning(image_data_base64, text, model, config, ba
         assert len(element) == 1
         assert isinstance(element[0], str)
     
-    check_output_shape(response_data, check_response, image=image_data_base64, text=text)
+    check_output_shape(response_data["caption"], check_response, image=image_data_base64, text=text)
 
 classes = ["photo", "document"]
 zero_shot_image_classification_test_cases = [
@@ -160,14 +156,12 @@ zero_shot_image_classification_test_cases = [
 def test_zero_shot_image_classification(image_data_base64, classes, model, config, base_url):
     headers = {'Content-Type': 'application/json'}
     payload = {
-        "task": "zero_shot_image_classification",
         "image": image_data_base64,
-        "model": model,
         "classes": classes,
         "config": config
     }
     
-    response = requests.post(f'{base_url}/extract', headers=headers, data=json.dumps(payload))
+    response = requests.post(f'{base_url}/tasks/zero_shot_image_classification/models/{model}/features', headers=headers, data=json.dumps(payload))
     
     # Check status code
     assert response.status_code == 200
@@ -179,20 +173,18 @@ def test_zero_shot_image_classification(image_data_base64, classes, model, confi
         assert len(element) == len(classes)
         assert isinstance(element[0], float)
     
-    check_output_shape(response_data, check_response, image=image_data_base64)
+    check_output_shape(response_data["probabilities"], check_response, image=image_data_base64)
 
 @pytest.mark.parametrize("model,config", [("clip_vit_large_patch14", {})])
 @pytest.mark.parametrize("image_data_base64", ["test/data/1.png", ["test/data/1.png"], ["test/data/1.png", "test/data/1.png"]], indirect=True)
 def test_image_embedding(image_data_base64, model, config, base_url):
     headers = {'Content-Type': 'application/json'}
     payload = {
-        "task": "image_embedding",
         "image": image_data_base64,
-        "model": model,
         "config": config
     }
     
-    response = requests.post(f'{base_url}/extract', headers=headers, data=json.dumps(payload))
+    response = requests.post(f'{base_url}/tasks/image_embedding/models/{model}/features', headers=headers, data=json.dumps(payload))
     
     assert response.status_code == 200
     
@@ -202,4 +194,4 @@ def test_image_embedding(image_data_base64, model, config, base_url):
         assert isinstance(element, list)
         assert isinstance(element[0], float)
     
-    check_output_shape(response_data, check_response, image=image_data_base64)
+    check_output_shape(response_data["embedding"], check_response, image=image_data_base64)
