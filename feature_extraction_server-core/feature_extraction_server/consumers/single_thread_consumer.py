@@ -1,10 +1,8 @@
 from feature_extraction_server.core.consumer import Consumer
 from feature_extraction_server.services.log_server import LogServer
-from injector import inject
 
 class SingleThreadConsumer(Consumer):
     
-    @inject
     def __init__(self, model, log_server : LogServer):
         super().__init__(model)
         self.log_server = log_server

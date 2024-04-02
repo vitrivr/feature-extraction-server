@@ -14,4 +14,4 @@ class TaskBuilder(Service):
         if not self.task_namespace.has_plugin(task_name):
             raise TaskNotFoundException(f"Task {task_name} is not a valid task.")
         
-        return self.task_namespace.get_plugin(name = task_name)
+        return self.task_namespace.instantiate_plugin(name = task_name)

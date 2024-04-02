@@ -85,17 +85,3 @@ def batch(iterable, n=1):
     l = len(iterable)
     for ndx in range(0, l, n):
         yield iterable[ndx:min(ndx + n, l)]
-
-
-def convert_to_camel_case(s):
-    # Split the string by underscore and capitalize each segment
-    s = s.split('_')
-    # Capitalize the first letter of each word and join them together
-    return ''.join(word.capitalize() for word in s)
-
-def convert_to_snake_case(s):
-
-    # Convert from CamelCase to snake_case
-    snake_case_name = ''.join(['_'+i.lower() if i.isupper() else i for i in s]).lstrip('_')
-
-    return snake_case_name

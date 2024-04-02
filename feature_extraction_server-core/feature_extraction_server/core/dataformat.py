@@ -29,14 +29,44 @@ def process_dataurl(dataurl):
         "data": match.group("data")
     }
 
+import abc 
 
-class IDataFormat:
+class IDataType(abc.ABC):
+    @staticmethod
+    @abc.abstractmethod
+    def from_data_url(data_url:str):
+        pass
+    
+    @abc.abstractmethod
+    def to_data_url(self):
+        pass
+
+class IRawData(IDataType):
+    def to_format(self, format):
+        if format is BinaryData:
+            return self.to_binary()
+        if format is Base64Data:
+            return self.to_base64()
+        if format is BinaryStreamData:
+            return self.to_binary_stream()
+        
+    
+    @staticmethod
+    def from_data_url(data_url:str):
+        raise NotImplementedError
+    
+    def to_data_url(self):
+        raise NotImplementedError
+    
+    @abc.abstractmethod
     def to_binary(self) -> bytes:
         pass
     
+    @abc.abstractmethod
     def to_base64(self) -> str:
         pass
     
+    @abc.abstractmethod
     def to_binary_stream(self) -> io.BytesIO:
         pass
     
@@ -52,7 +82,7 @@ class IDataFormat:
     def from_binary_stream(cls, data: io.BytesIO):
         pass
 
-class BinaryData(IDataFormat):
+class BinaryData(IRawData):
     def __init__(self, data: bytes):
         self._data = data
     
@@ -77,7 +107,7 @@ class BinaryData(IDataFormat):
     def from_binary_stream(cls, data: io.BytesIO):
         return cls(BinaryData(data).to_binary())
 
-class Base64Data(IDataFormat):
+class Base64Data(IRawData):
     def __init__(self, data: str):
         self._data = data
     
@@ -102,7 +132,7 @@ class Base64Data(IDataFormat):
     def from_binary_stream(cls, data: io.BytesIO):
         return cls(BinaryStreamData(data).to_base64())
 
-class BinaryStreamData(IDataFormat):
+class BinaryStreamData(IRawData):
     def __init__(self, data: io.BytesIO):
         self._data = data
     
@@ -128,7 +158,7 @@ class BinaryStreamData(IDataFormat):
         return cls(data)
 
 
-class IAudioFormat:
+class IAudioFormat(IDataType):
     
     def to(self, format: type):
         if format is WavAudio:
@@ -155,14 +185,20 @@ class IAudioFormat:
             return WavAudio(data)
         raise ValueError("Invalid data URL media type")
     
-    def to_wav(self)-> IDataFormat:
+    def to_data_url(self)->str:
+        raise NotImplementedError
+    
+    def to_wav(self)-> IRawData:
         pass
     
     def to_numpy(self)-> Tuple[np.ndarray, int]:
         pass
     
+    def to_data_url(self)->str:
+        raise NotImplementedError
+    
     @classmethod
-    def from_wav(cls, data: IDataFormat):
+    def from_wav(cls, data: IRawData):
         return cls(WavAudio(data).to(cls))
     
     @classmethod
@@ -174,7 +210,7 @@ class NumpyAudio(IAudioFormat):
         self.samples = data[0]
         self.sample_rate = data[1]
     
-    def to_wav(self)-> IDataFormat:
+    def to_wav(self)-> IRawData:
         byte_stream = io.BytesIO()
         sf.write(byte_stream, self.samples, self.sample_rate)
         return BinaryStreamData(byte_stream)
@@ -184,10 +220,10 @@ class NumpyAudio(IAudioFormat):
     
     
 class WavAudio(IAudioFormat):
-    def __init__(self, data: IDataFormat):
+    def __init__(self, data: IRawData):
         self._data = data
     
-    def to_wav(self)-> IDataFormat:
+    def to_wav(self)-> IRawData:
         return self._data
     
     def to_numpy(self)-> Tuple[np.ndarray, int]:
@@ -200,7 +236,7 @@ import cv2, PIL.Image
 import abc
 
 
-class IImageFormat(abc.ABC):
+class IImageFormat(IDataType):
     
     def to(self, format: type):
         if format is PngImage:
@@ -240,12 +276,15 @@ class IImageFormat(abc.ABC):
             return JpegImage(data)
         raise ValueError("Invalid data URL media type")
     
+    def to_data_url(self)->str:
+        raise NotImplementedError
+    
     @abc.abstractmethod
-    def to_png(self)-> IDataFormat:
+    def to_png(self)-> IRawData:
         pass
     
     @abc.abstractmethod
-    def to_jpeg(self)-> IDataFormat:
+    def to_jpeg(self)-> IRawData:
         pass
     
     @abc.abstractmethod
@@ -261,11 +300,11 @@ class IImageFormat(abc.ABC):
         pass
     
     @classmethod
-    def from_jpeg(cls, data: IDataFormat):
+    def from_jpeg(cls, data: IRawData):
         return cls(JpegImage(data).to(cls))
     
     @classmethod
-    def from_png(cls, data: IDataFormat):
+    def from_png(cls, data: IRawData):
         return cls(PngImage(data).to(cls))
     
     @classmethod
@@ -281,7 +320,7 @@ class IImageFormat(abc.ABC):
         return cls(OpencvImage(data).to(cls))
     
     @staticmethod
-    def from_unknown(data: IDataFormat):
+    def from_unknown(data: IRawData):
         img = PIL.Image.open(data.to_binary_stream())
         if img.format == "PNG":
             return PngImage(data)
@@ -294,12 +333,12 @@ class PillowImage(IImageFormat):
     def __init__(self, data: PIL.Image):
         self._data = data
     
-    def to_png(self)-> IDataFormat:
+    def to_png(self)-> IRawData:
         byte_stream = io.BytesIO()
         self._data.save(byte_stream, format='PNG')
         return BinaryStreamData(byte_stream)
     
-    def to_jpeg(self)-> IDataFormat:
+    def to_jpeg(self)-> IRawData:
         byte_stream = io.BytesIO()
         self._data.save(byte_stream, format='JPEG')
         return BinaryStreamData(byte_stream)
@@ -313,13 +352,13 @@ class PillowImage(IImageFormat):
 
 class PngImage(IImageFormat):
     
-    def __init__(self, data: IDataFormat):
+    def __init__(self, data: IRawData):
         self._data = data
         
-    def to_png(self)-> IDataFormat:
+    def to_png(self)-> IRawData:
         return self._data
     
-    def to_jpeg(self)-> IDataFormat:
+    def to_jpeg(self)-> IRawData:
         byte_stream = io.BytesIO()
         img = PIL.Image.open(self._data.to_binary_stream())
         img.save(byte_stream, format='JPEG')
@@ -338,16 +377,16 @@ class PngImage(IImageFormat):
     
 class JpegImage(IImageFormat):
     
-    def __init__(self, data: IDataFormat):
+    def __init__(self, data: IRawData):
         self._data = data
         
-    def to_png(self)-> IDataFormat:
+    def to_png(self)-> IRawData:
         byte_stream = io.BytesIO()
         img = PIL.Image.open(self._data.to_binary_stream())
         img.save(byte_stream, format='PNG')
         return BinaryStreamData(byte_stream)
     
-    def to_jpeg(self)-> IDataFormat:
+    def to_jpeg(self)-> IRawData:
         return self._data
     
     def to_numpy(self)-> np.ndarray:
@@ -366,13 +405,13 @@ class NumpyImage(IImageFormat):
     def __init__(self, data: np.ndarray):
         self._data = data
         
-    def to_png(self)-> IDataFormat:
+    def to_png(self)-> IRawData:
         byte_stream = io.BytesIO()
         img = PIL.Image.fromarray(self._data)
         img.save(byte_stream, format='PNG')
         return BinaryStreamData(byte_stream)
     
-    def to_jpeg(self)-> IDataFormat:
+    def to_jpeg(self)-> IRawData:
         byte_stream = io.BytesIO()
         img = PIL.Image.fromarray(self._data)
         img.save(byte_stream, format='JPEG')
@@ -393,13 +432,13 @@ class OpencvImage(IImageFormat):
     def __init__(self, data: np.ndarray):
         self._data = data
     
-    def to_png(self)-> IDataFormat:
+    def to_png(self)-> IRawData:
         byte_stream = io.BytesIO()
         img = PIL.Image.fromarray(cv2.cvtColor(self._data, cv2.COLOR_BGR2RGB))
         img.save(byte_stream, format='PNG')
         return BinaryStreamData(byte_stream)
     
-    def to_jpeg(self)-> IDataFormat:
+    def to_jpeg(self)-> IRawData:
         byte_stream = io.BytesIO()
         img = PIL.Image.fromarray(cv2.cvtColor(self._data, cv2.COLOR_BGR2RGB))
         img.save(byte_stream, format='JPEG')

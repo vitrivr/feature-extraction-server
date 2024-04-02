@@ -72,6 +72,18 @@ class ExecutionState(Service):
             next_job = self.execution_state.job_queues[self.name].get()
             return next_job
         
+        def get_n_jobs(self):
+            return self.execution_state.job_queues[self.name].qsize()
+        
+        def get_jobs(self):
+            temp_items = []
+            with self.execution_state.lock:
+                while not self.execution_state.job_queues[self.name].empty():
+                    temp_items.append(self.execution_state.job_queues[self.name].get())
+                for item in temp_items:
+                    self.execution_state.job_queues[self.name].put(item)
+            return temp_items
+        
         def add_job(self, job):
             if self.get_state() == "uninitialized":
                 error_msg = f"Cannot add the job {job.id} to the model {self.name} because the model is in an uninitialized state."
@@ -129,6 +141,8 @@ class ExecutionState(Service):
                 try:
                     result = func(*args, **kwargs)
                 except Exception as e:
+                    error_msg = f"Job {self.id} failed with exception: " + str(e)
+                    logger.error(error_msg)
                     self.set_failed(e)
                     return
                 self.set_complete(result)

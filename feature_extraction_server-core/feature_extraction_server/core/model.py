@@ -5,8 +5,7 @@ from injector import inject
 from feature_extraction_server.core.exceptions import LoadModelFailedException,StartModelFailedException, MissingTaskImplementationException
 from feature_extraction_server.services.execution_state import ExecutionState
 from feature_extraction_server.services.consumer_builder import ConsumerBuilder
-import abc
-from feature_extraction_server.core.utils import convert_to_snake_case
+from simple_plugin_manager.utils import convert_to_snake_case
 
 logger = logging.getLogger(__name__)
             
@@ -27,6 +26,10 @@ class Model():
     
     def __setstate__(self, state):
         self.name, self.consumer_builder, self._state = state
+    
+    def reraise_exception(self):
+        if self._state.get_state() == "failed":
+            raise self._state.get_exception()
         
     
     def get_name(self):
@@ -46,8 +49,8 @@ class Model():
         self._state.add_job(job)
         
     def start(self):
-        logger.info(f"Starting model {self.name}")
         self._state.set_starting()
+        logger.info(f"Starting model {self.name}")
         try:
             model_consumer = None
             if self.consumer_type_name is None:
@@ -61,15 +64,6 @@ class Model():
             error_msg = f"Cannot start model {self.name} because of another exception: " + str(e)
             logger.error(error_msg)
             raise StartModelFailedException(error_msg) from e
-
-    # def get_consumer_type_name(self):
-    #     logger.debug(f"Getting consumer type for model {self.name}")
-    #     if not hasattr(self.plugin, "consumer_type"):
-    #         error_msg = f"Model {self.name} does not have a configured consumer type."
-    #         logger.warning(error_msg)
-    #         raise MissingConsumerTypeException(error_msg)
-        
-    #     return self.plugin.consumer_type
         
 
     def load_model(self):
@@ -79,6 +73,7 @@ class Model():
             self._state.set_loading()
             self._load_model()
         except Exception as e:
+            self._state.set_failed(e)
             error_msg = f"Cannot load the model {self.name} because of another exception: " + str(e)
             logger.error(error_msg)
             raise LoadModelFailedException(error_msg) from e
@@ -102,6 +97,14 @@ class Model():
             logger.error(f"Model {self.name} failed with exception: " + str(e))
             self._state.set_failed(e)
 
+    def get_jobs(self):
+        return self._state.get_jobs()
+    
+    def get_n_jobs(self):
+        return self._state.get_n_jobs()
+    
+    def get_state(self):
+        return self._state.get_state()
     
     def setup():
         pass
