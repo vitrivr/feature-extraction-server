@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.routing import APIRoute
 from simple_plugin_manager.settings import StringSetting, IntegerSetting
 import logging
 from simple_plugin_manager.services.settings_manager import SettingsManager
@@ -26,6 +27,9 @@ class FastApiApp(Service):
         fast_api_service = FastApiApp(spec_path=spec_path_setting.get())
         fast_api_service.app.settings_manager = settings_manager
         return fast_api_service
+
+
+
 
 def create_app(*args):
     os.environ['SERVICE_NAMESPACE'] = 'feature_extraction_server.services'

@@ -1,33 +1,18 @@
-from feature_extraction_server.core.utils import prepare_images
+from feature_extraction_server.core.dataformat import IAudioFormat
+from feature_extraction_server.core.datamodel import DataModel, Field
 from feature_extraction_server.core.task import Task
 
-from pydantic import BaseModel
-from typing import Union, List
+from typing import List
 
-class InputSchema(BaseModel):
-    image: Union[List[str], str]
-    config: dict = {}
-
-class OutputSchema(BaseModel):
-    labels: Union[List[List[str]], List[str]]
-    boxes: Union[List[List[List[int]]], List[List[int]]]
-    scores: Union[List[List[float]], List[float]]
     
 class ObjectDetection(Task):
-            
-    def get_input_schema(self):
-        return InputSchema
+    input = DataModel("ObjectDetectionInput",
+                        Field("image", True, IAudioFormat, optional=False),
+                        Field("config", False, dict, optional=True),
+                        )
+    output = DataModel("ObjectDetectionOutput",
+                        Field("labels", True, List[str], optional=False),
+                        Field("boxes", True, List[List[int]], optional=False),
+                        Field("scores", True, List[float], optional=False),
+                        )
     
-    def get_output_schema(self):
-        return OutputSchema
-    
-    def wrap_implementation(self, func):
-        def inner(image, config={}):
-            image, return_list = prepare_images(image)
-            result = func(image, config)
-            if not return_list:
-                result["labels"] = result["labels"][0]
-                result["boxes"] = result["boxes"][0]
-                result["scores"] = result["scores"][0]
-            return result
-        return inner

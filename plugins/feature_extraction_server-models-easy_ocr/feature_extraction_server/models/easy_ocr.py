@@ -6,11 +6,7 @@ class EasyOcr(Model):
         import easyocr
         self.reader = easyocr.Reader(['en'])
 
-    def optical_character_recognition(self, image, config={}):
-        results = []
-        for img in image:
-            out = self.reader.readtext(img.to_numpy())
-            text = " ".join([x[1] for x in out])
-            results.append(text)
-        
-        return {"text":results}
+    def batched_optical_character_recognition(self, image, config={}):
+        out = self.reader.readtext(image.to_numpy())
+        text = " ".join([x[1] for x in out])
+        return {"text":text}

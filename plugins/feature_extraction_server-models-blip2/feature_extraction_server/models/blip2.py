@@ -22,7 +22,7 @@ class Blip2(Model):
         )
         self.condgenmodel.to(self.device)
 
-    def conditional_image_captioning(self, image, text, config={}):
+    def batched_conditional_image_captioning(self, image, text, config={}):
         
         # Set defaults if not provided
         args = self.defaults.copy()
@@ -39,7 +39,7 @@ class Blip2(Model):
         return {"caption":list(batch(preds, len(preds)//len(image)))}
 
 
-    def image_captioning(self, image, config):
+    def batched_image_captioning(self, image, config):
         # Set defaults if not provided
         args = self.defaults.copy()
         args.update(config)

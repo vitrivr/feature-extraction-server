@@ -1,30 +1,13 @@
-from feature_extraction_server.core.utils import prepare_images
+from feature_extraction_server.core.dataformat import IImageFormat
+from feature_extraction_server.core.datamodel import DataModel, Field
 from feature_extraction_server.core.task import Task
-
-from pydantic import BaseModel
-from typing import Union, List
-
-class InputSchema(BaseModel):
-    image: Union[List[str], str]  
-    config: dict = {}
-
-class OutputSchema(BaseModel):
-    embeddings: Union[List[float], List[List[float]]]
+from typing import List
 
 class FaceEmbedding(Task):
         
-    def get_input_schema(self):
-        return InputSchema
-    
-    def get_output_schema(self):
-        return OutputSchema
-
-    def wrap_implementation(self, func):
-        def inner(image, config={}):
-            image, return_list = prepare_images(image)
-            result = func(image, config)
-            if not return_list:
-                result["embeddings"] = result["embeddings"][0]
-            return result
-        return inner
-        
+    input = DataModel("FaceEmbeddingInput",
+                    Field("image", True, IImageFormat, optional=False),
+                    Field("config", False, dict, optional=True),
+                    )
+    output = DataModel("FaceEmbeddingOutput",
+                       Field("embedding", True, List[float], optional=False))

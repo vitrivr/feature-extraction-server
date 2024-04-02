@@ -3,7 +3,7 @@ from feature_extraction_server.core.model import Model
 class VitGpt2(Model):
 
 
-    def load_model(self):
+    def _load_model(self):
         global torch, batch
         import torch
         from transformers import VisionEncoderDecoderModel, ViTImageProcessor, AutoTokenizer
@@ -21,7 +21,7 @@ class VitGpt2(Model):
     defaults = {}  #for more info on these args (and additional args), see https://huggingface.co/docs/transformers/main_classes/text_generation
         
 
-    def image_captioning(self, image, config={}):
+    def batched_image_captioning(self, image, config={}):
         pixel_values = self.feature_extractor(images=list(map(lambda x: x.to_numpy(), image)), return_tensors="pt").pixel_values
         pixel_values = pixel_values.to(self.device)
 
