@@ -11,6 +11,7 @@ targets["full"]="audio_diarization:blip:conditional_image_captioning:face_embedd
 targets["clip"]="simple_plugin_manager:image_embedding:base_api:clip_vit_large_patch14:fastapi:text_embedding:zero_shot_image_classification"
 targets["blip2"]="simple_plugin_manager:image_captioning:base_api:blip2:fastapi:conditional_image_captioning"
 targets["whisper"]="simple_plugin_manager:base_api:whisper:fastapi:automated_speech_recognition"
+targets["tesseract"]="simple_plugin_manager:base_api:tesseract:fastapi:optical_character_recognition"
 
 # Function to build a Docker image for a given target
 build_image() {
@@ -29,6 +30,7 @@ build_image() {
     echo "target: $target"
 
     # Build the Docker image using the specified PLUGINPATH
+    docker build --build-arg PLUGINPATH="$pluginpath" -t "featureextractionserver:$target" .
     docker build --build-arg PLUGINPATH="$pluginpath" -t "featureextractionserver:$target" .
 }
 
