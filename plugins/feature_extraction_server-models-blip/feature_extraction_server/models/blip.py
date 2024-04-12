@@ -30,7 +30,8 @@ class Blip(Model):
             output_ids = self.model.generate(**inputs, **config)
         preds = self.processor.batch_decode(output_ids, skip_special_tokens=True)
         preds = [pred.strip() for pred in preds]
-        return {"caption":list(batch(preds, len(preds)//len(image)))}
+        batched =list(batch(preds, len(preds)//len(image)))
+        return {"caption":[captions[0] for captions in batched]}
 
     def batched_conditional_image_captioning(self, image, text, config={}):
         # Set defaults if not provided
@@ -43,4 +44,5 @@ class Blip(Model):
             output_ids = self.model.generate(**inputs,  **args)
         preds = self.processor.batch_decode(output_ids, skip_special_tokens=True)
         preds = [pred.strip() for pred in preds]
-        return {"caption":list(batch(preds, len(preds)//len(image)))}
+        batched =list(batch(preds, len(preds)//len(image)))
+        return {"caption":[captions[0] for captions in batched]}

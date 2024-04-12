@@ -8,7 +8,8 @@ authors = [
 requires-python = ">=3.11"
 
 dependencies = [
-    "apiflask"
+    "fastapi",
+    "uvicorn"
 ]
 
 [tool.flit.module]

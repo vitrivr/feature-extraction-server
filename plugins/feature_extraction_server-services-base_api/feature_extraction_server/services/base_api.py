@@ -2,6 +2,7 @@
 from feature_extraction_server.services.extraction_backend import ExtractionBackend
 from feature_extraction_server.services.fast_api_app import FastApiApp
 from feature_extraction_server.core.exceptions import ModelAlreadyStartedException
+from feature_extraction_server.core.execution_state import JobState, ModelState
 import logging
 from fastapi import Body
 from simple_plugin_manager.service import Service
@@ -39,14 +40,14 @@ def wrap_output_model(output_model, batched) -> Type[BaseModel]:
         class_name = f"Batched{class_name}"
         JobResponse = pydantic.create_model(
             class_name,
-            status=(str, ...),  # Field with ellipsis for required fields
-            result=(List[pyd], None)  # Optional field, defaulting to None
+            status=(JobState, ...),  # Field with ellipsis for required fields
+            result=(List[pyd], None),  # Optional field, defaulting to None
         )
     else:
         JobResponse = pydantic.create_model(
             class_name,
-            status=(str, ...),  # Field with ellipsis for required fields
-            result=(pyd, None)  # Optional field, defaulting to None
+            status=(JobState, ...),  # Field with ellipsis for required fields
+            result=(pyd, None),  # Optional field, defaulting to None
         )
 
     return JobResponse
@@ -54,7 +55,7 @@ def wrap_output_model(output_model, batched) -> Type[BaseModel]:
 
 class JobStatus(BaseModel):
     id: str
-    status: str
+    status: JobState
 
 # def wrap_function(func, args, input_model, output_model):
 #     if not input_model is None:
@@ -72,7 +73,7 @@ def to_snake_case(string):
     return string.replace("-", "_")
 
 class ModelStatus(BaseModel):
-    status: str
+    status: ModelState
     jobs: List[JobStatus]
 
 class BaseApi(Service):
@@ -116,30 +117,38 @@ class BaseApi(Service):
     def make_features(self, task, batched):
         wrapped_output_model = wrap_output_model(task.get_output_data_model(), batched)
         async def features(job:str) -> wrapped_output_model:
-            out = self._features(job_id=job)
-            if "result" in out and batched:
-                out["result"] = list(task.get_output_data_model().unroll(out["result"]))
-            return out
+            try:
+                out = self._features(job_id=job)
+                if "result" in out and batched:
+                    out["result"] = list(task.get_output_data_model().unroll(out["result"]))
+                return out
+            except Exception as e:
+                logger.error(f"Error while fetching job {job}: {e}")
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error while fetching job: {e}") from e
         return features
     
     def _features(self, job_id):
-        # Assume self._active_jobs is accessible here
         job = self._active_jobs.get(job_id)
         if job is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
-        if job.get_state() == "complete":
+        state = job.get_state()
+        if state == JobState.failed:
+            job.reraise_exception()
+        if state == JobState.complete:
             self._active_jobs.pop(job_id)
-            return jsonable_encoder({"status": "completed", "result": job.get_result()})
+            return jsonable_encoder({"status": state, "result": job.get_result()})
         else:
             return jsonable_encoder({"status": job.get_state()})
-        
         
     
     def make_new_job(self, task, batched):
         input_model = task.get_input_data_model().to_pydantic(batched)
         async def features(model:str, data : input_model = Body(...)) -> JobStatus:
-            model = self._extraction_backend.get_model(model_name = to_snake_case(model))
-            return self._new_job(task, model, dict(data), batched)
+            try:
+                model = self._extraction_backend.get_model(model_name = to_snake_case(model))
+                return self._new_job(task, model, dict(data), batched)
+            except Exception as e:
+                raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error while creating job: {e}") from e
         return features
     
     def _new_job(self, task, model, json_data, batched):
@@ -152,6 +161,7 @@ class BaseApi(Service):
         self._active_jobs[job.id] = job
         job.start()
         return {"id": job.id, "status":job.get_state()}
+
 
     async def list_all_tasks(self) -> list[str]:
         task_names = []

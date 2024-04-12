@@ -5,6 +5,7 @@ from injector import inject
 from feature_extraction_server.core.exceptions import LoadModelFailedException,StartModelFailedException, MissingTaskImplementationException
 from feature_extraction_server.services.execution_state import ExecutionState
 from feature_extraction_server.services.consumer_builder import ConsumerBuilder
+from feature_extraction_server.core.execution_state import ModelState
 from simple_plugin_manager.utils import convert_to_snake_case
 
 logger = logging.getLogger(__name__)
@@ -28,7 +29,7 @@ class Model():
         self.name, self.consumer_builder, self._state = state
     
     def reraise_exception(self):
-        if self._state.get_state() == "failed":
+        if self._state.get_state() == ModelState.failed:
             raise self._state.get_exception()
         
     

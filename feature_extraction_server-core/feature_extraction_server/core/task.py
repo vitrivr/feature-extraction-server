@@ -26,7 +26,7 @@ class Task:
             input_datamodel = cls.get_input_data_model()
             output_datamodel = cls.get_output_data_model()
             preprocessed_data = input_datamodel.preprocess(data, False)
-            result = model.get_task_implementation(cls.name)(**preprocessed_data)
+            result = model.get_task_implementation(cls.get_name())(**preprocessed_data)
             return output_datamodel.postprocess(result, False)
         
         def batched_to_single(data):

@@ -36,7 +36,8 @@ class Blip2(Model):
             output_ids = self.condgenmodel.generate(**inputs,  **args)
         preds = self.processor.batch_decode(output_ids, skip_special_tokens=True)
         preds = [pred.strip() for pred in preds]
-        return {"caption":list(batch(preds, len(preds)//len(image)))}
+        batched =list(batch(preds, len(preds)//len(image)))
+        return {"caption":[captions[0] for captions in batched]}
 
 
     def batched_image_captioning(self, image, config):
@@ -52,4 +53,5 @@ class Blip2(Model):
             output_ids = self.condgenmodel.generate(**inputs,  **args)
         preds = self.processor.batch_decode(output_ids, skip_special_tokens=True)
         preds = [pred.strip() for pred in preds]
-        return {"caption":list(batch(preds, len(preds)//len(image)))}
+        batched =list(batch(preds, len(preds)//len(image)))
+        return {"caption":[captions[0] for captions in batched]}

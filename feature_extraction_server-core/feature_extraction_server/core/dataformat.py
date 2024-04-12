@@ -4,6 +4,7 @@ import base64
 import numpy as np    
 import re
 import soundfile as sf
+import pydub
 
 def process_dataurl(dataurl):
     """
@@ -165,6 +166,8 @@ class IAudioFormat(IDataType):
             return self.to_wav()
         if format is NumpyAudio:
             return self.to_numpy()
+        if format is PyDubAudio:
+            return self.to_pydub()
         raise ValueError("Invalid audio format")
     
     @staticmethod
@@ -194,8 +197,12 @@ class IAudioFormat(IDataType):
     def to_numpy(self)-> Tuple[np.ndarray, int]:
         pass
     
+    def to_pydub(self):
+        pass
+    
     def to_data_url(self)->str:
         raise NotImplementedError
+        
     
     @classmethod
     def from_wav(cls, data: IRawData):
@@ -204,6 +211,10 @@ class IAudioFormat(IDataType):
     @classmethod
     def from_numpy(cls, data: Tuple[np.ndarray, int]):
         return cls(NumpyAudio(data).to(cls))
+    
+    @classmethod
+    def from_pydub(cls, data: pydub.AudioSegment):
+        return cls(PyDubAudio(data).to(cls))
     
 class NumpyAudio(IAudioFormat):
     def __init__(self, data: Tuple[np.ndarray, int]):
@@ -218,6 +229,13 @@ class NumpyAudio(IAudioFormat):
     def to_numpy(self)-> Tuple[np.ndarray, int]:
         return self.samples, self.sample_rate
     
+    def to_pydub(self):
+        return pydub.AudioSegment(data=self.samples.tobytes(), sample_width=self.samples.dtype.itemsize, frame_rate=self.sample_rate, channels=self.samples.shape[1])
+    
+    def resample(self, sample_rate: int):
+        pydub_audio = PyDubAudio(self.to_pydub())
+        return pydub_audio.resample(sample_rate)
+        
     
 class WavAudio(IAudioFormat):
     def __init__(self, data: IRawData):
@@ -231,7 +249,33 @@ class WavAudio(IAudioFormat):
         samples, sample_rate = sf.read(byte_stream)
         return samples, sample_rate
     
+    def to_pydub(self):
+        return pydub.AudioSegment.from_wav(self._data.to_binary_stream())
     
+    def resample(self, sample_rate: int):
+        pydub_audio = PyDubAudio(self.to_pydub())
+        return pydub_audio.resample(sample_rate)
+
+class PyDubAudio(IAudioFormat):
+    def __init__(self, data: pydub.AudioSegment):
+        self._data = data
+    
+    def to_wav(self)-> IRawData:
+        byte_stream = io.BytesIO()
+        self._data.export(byte_stream, format='wav')
+        return BinaryStreamData(byte_stream)
+    
+    def to_numpy(self)-> Tuple[np.ndarray, int]:
+        samples = np.frombuffer(self._data.raw_data, np.int16)
+        return samples, self._data.frame_rate
+    
+    def to_pydub(self):
+        return self._data
+    
+    def resample(self, sample_rate: int):
+        _data = self._data.set_frame_rate(sample_rate)
+        return PyDubAudio(_data)
+
 import cv2, PIL.Image
 import abc
 

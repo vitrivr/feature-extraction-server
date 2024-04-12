@@ -1,13 +1,15 @@
 import logging
+import time
 logger = logging.getLogger(__name__)
 
-from feature_extraction_server.core.exceptions import MissingTaskImplementationException
+from feature_extraction_server.core.exceptions import JobIncompleteException, MissingTaskImplementationException
 from simple_plugin_manager.settings import FloatSetting
 from simple_plugin_manager.service import Service
 from simple_plugin_manager.services.settings_manager import SettingsManager
 from feature_extraction_server.services.job_builder import JobBuilder
 from feature_extraction_server.services.model_namespace import ModelNamespace
 from feature_extraction_server.services.task_namespace import TaskNamespace
+from feature_extraction_server.core.execution_state import JobState
 
 
 
@@ -39,8 +41,24 @@ class ExtractionBackend(Service):
         def get_state(self):
             return self._job.get_state()
         
+        def block(self):
+            while True:
+                try:
+                    self._job.reraise_exception()
+                    result = self._job.get_result()
+                    return result
+                except JobIncompleteException:
+                    time.sleep(self._result_check_interval)
+        
         def get_result(self):
-            return self._job.get_result(self._result_check_interval)
+            if self._job.get_state() == JobState.complete:
+                return self._job.get_result()
+            raise Exception("Job is not in a complete state.")
+        
+        def reraise_exception(self):
+            if self._job.get_state() == JobState.failed:
+                self._job.reraise_exception()
+            raise Exception("Job is not in a failed state.")
     
     class ModelInterface:
         def __init__(self, model, extraction_backend):

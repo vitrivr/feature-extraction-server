@@ -1,5 +1,6 @@
 import uuid
 from feature_extraction_server.core.exceptions import JobIncompleteException
+from feature_extraction_server.core.execution_state import JobState
 import time
 import logging
 
@@ -20,15 +21,8 @@ class Job:
         self._state.set_starting()
         self.model.add_job(self)
     
-    def get_result(self, check_interval=0.1):
-        while True:
-            try:
-                self.model.reraise_exception()
-                result = self._state.get_result()
-                logger.debug(f"Job {self.id} completed")
-                return result
-            except JobIncompleteException:
-                time.sleep(check_interval)
+    def get_result(self):
+        return self._state.get_result()
     
     def run(self): 
         logger.debug(f"Job {self.id} running")
@@ -38,3 +32,7 @@ class Job:
     def get_state(self):
         return self._state.get_state()
 
+    def reraise_exception(self):
+        self.model.reraise_exception()
+        if self._state.get_state() == JobState.failed:
+            raise self._state.get_exception()

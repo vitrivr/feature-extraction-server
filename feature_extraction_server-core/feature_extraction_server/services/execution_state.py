@@ -1,6 +1,7 @@
 import logging
 from feature_extraction_server.core.exceptions import ModelAlreadyStartedException, JobIncompleteException, JobExecutionException
 from feature_extraction_server.services.model_namespace import ModelNamespace
+from feature_extraction_server.core.execution_state import JobState, ModelState
 from simple_plugin_manager.services.synchronization_provider import SynchronizationProvider
 from simple_plugin_manager.service import Service
 
@@ -24,7 +25,7 @@ class ExecutionState(Service):
         self.model_state = mp_manager.dict()
         self.lock = mp_manager.Lock()
         for model_name in model_names:
-            self.model_state[model_name] = {"state": "uninitialized"}
+            self.model_state[model_name] = {"state": ModelState.uninitialized}
             self.job_queues[model_name] = mp_manager.Queue()
     
     class ModelState:
@@ -45,28 +46,32 @@ class ExecutionState(Service):
         def get_state(self):
             return self._state["state"]
         
+        def get_exception(self):
+            return self._state["exception"]
+        
         def set_starting(self):
             with self.execution_state.lock:
-                if not self.execution_state.model_state[self.name]["state"] in ["uninitialized","stopped","failed"]:
-                    error_msg = f"Cannot start model {self.name} because it has already been started."
+                state = self.execution_state.model_state[self.name]["state"]
+                if not state.startable():
+                    error_msg = f"Cannot start model {self.name} because it is in the state '{state}'."
                     logger.debug(error_msg)
                     raise ModelAlreadyStartedException(error_msg)
                 self.execution_state.model_state[self.name] = {"state": "starting"}
         
         def set_loading(self):
-            self._state = {"state": "loading"}
+            self._state = {"state": ModelState.loading}
         
         def set_running(self):
-            self._state = {"state": "running"}
+            self._state = {"state": ModelState.running}
         
         def set_stopped(self):
-            self._state = {"state": "stopped"}
+            self._state = {"state": ModelState.stopped}
         
         def set_failed(self, exception):
-            self._state = {"state": "failed", "exception": exception}
+            self._state = {"state": ModelState.failed, "exception": exception}
         
         def get_next_job(self):
-            if self.get_state() == "uninitialized":
+            if self.get_state() == ModelState.uninitialized:
                 error_msg = f"Cannot fetch the next job for the model {self.name} because it is in an uninitialized state."
                 logger.error(error_msg)
             next_job = self.execution_state.job_queues[self.name].get()
@@ -85,7 +90,7 @@ class ExecutionState(Service):
             return temp_items
         
         def add_job(self, job):
-            if self.get_state() == "uninitialized":
+            if self.get_state() == ModelState.uninitialized:
                 error_msg = f"Cannot add the job {job.id} to the model {self.name} because the model is in an uninitialized state."
                 logger.error(error_msg)
             self.execution_state.job_queues[self.name].put(job)
@@ -109,35 +114,39 @@ class ExecutionState(Service):
         def get_state(self):
             return self._state["state"]
         
+        def get_exception(self):
+            return self._state["exception"]
+        
         def get_result(self):
             state = self._state
-            if "exception" in state:
-                error_msg = f"Cannot get the result of job {self.id} ({state['state']}) because there was an exception: " + str(state["exception"])
-                logging.error(error_msg)
-                raise JobExecutionException(error_msg) from state["exception"]
+            # if state["state"] == JobState.failed:
+            #     error_msg = f"Cannot get the result of job {self.id} ({state['state']}) because there was an exception: " + str(state["exception"])
+            #     logging.error(error_msg)
+            #     raise JobExecutionException(error_msg) from state["exception"]
             
-            if not "result" in state:
+            if not state["state"] == JobState.complete:
                 error_msg = f"Cannot get the result of job {self.id} ({state['state']})."
                 raise JobIncompleteException(error_msg)
             
             return state["result"]
         
         def set_starting(self):
-            self._state = {"state": "starting"}
+            self._state = {"state": JobState.starting}
         
         def set_running(self):
-            self._state = {"state": "running"}
+            self._state = {"state": JobState.running}
         
         def set_complete(self, result):
-            self._state = {"state": "complete", "result": result}
+            self._state = {"state": JobState.complete, "result": result}
         
         def set_failed(self, exception):
-            self._state = {"state": "failed", "exception":exception}
+            self._state = {"state": JobState.failed, "exception":exception}
         
         def wrap(self, func):
             
             def inner(*args, **kwargs):
                 self.set_running()
+                logger.debug(f"Job {self.id} running")
                 try:
                     result = func(*args, **kwargs)
                 except Exception as e:
@@ -146,5 +155,6 @@ class ExecutionState(Service):
                     self.set_failed(e)
                     return
                 self.set_complete(result)
+                logger.debug(f"Job {self.id} completed")
             
             return inner
