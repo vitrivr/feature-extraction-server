@@ -1,6 +1,7 @@
 FROM python:3.11.4-slim-bullseye
 
 ARG PLUGINPATH
+ARG CMD_ENTRYPOINT
 
 # Set environment variables
 ENV PATH=/root/.local/bin:$PATH \
@@ -9,31 +10,17 @@ ENV PATH=/root/.local/bin:$PATH \
 # Set the working directory in the container to /app
 WORKDIR /app
 
-# Update package lists
-RUN apt-get update
 
-# Install flit
-RUN pip install flit
+COPY src/ ./src/
 
-
-# Split the PLUGINPATH on ':' to handle multiple paths
-COPY plugins/ ./plugins/
-COPY core/ ./core/
-
-
-RUN chmod -R 755 ./plugins/ \
-    && chmod -R 755 ./core/
-
-# install core
-RUN cd core \
-    && chmod +x ./install_system_dependencies.sh \
-    && ./install_system_dependencies.sh \
-    && flit install
+RUN apt-get update; \
+    pip install flit; \
+    chmod -R 755 ./src/;
 
 # Use Bash to handle the complex command
 SHELL ["/bin/bash", "-c"]
 
-RUN for subdir in ./plugins/*; do \
+RUN for subdir in ./src/*; do \
         plugin=$(basename "$subdir"); \
         if echo ":$PLUGINPATH:" | grep -q ":$plugin:" && [ -d "$subdir" ] && [ -e "$subdir/pyproject.toml" ]; then \
             cd "$subdir"; \
@@ -51,15 +38,14 @@ RUN for subdir in ./plugins/*; do \
 SHELL ["/bin/sh", "-c"]
 
 
-
-# Cleanup in the same layer to reduce image size
-RUN apt-get clean \
-    && rm -rf /var/lib/apt/lists/* 
+RUN rm -rf ./src; \
+    apt-get clean; \
+    rm -rf /var/lib/apt/lists/* 
 
 EXPOSE 8888
 
-CMD uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0
+ENV CMD_ENTRYPOINT=${CMD_ENTRYPOINT}
 
-# endless loop
+COPY .env ./
 
-# CMD ["tail", "-f", "/dev/null"]
+CMD ${CMD_ENTRYPOINT}

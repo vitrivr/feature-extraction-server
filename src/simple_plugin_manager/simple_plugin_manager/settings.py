@@ -1,6 +1,11 @@
 
 from argparse import ArgumentParser
-from decouple import config, UndefinedValueError
+from decouple import UndefinedValueError
+
+from decouple import Config, RepositoryEnv
+#from decouple import config
+
+config = Config(RepositoryEnv("./.env"))
 
 import abc
 from simple_plugin_manager.exceptions import InvalidConfigurationException, MissingConfigurationException

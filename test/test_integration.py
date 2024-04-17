@@ -1,9 +1,8 @@
 import sys
-sys.path.append('./feature_extraction_server-core/') 
 import os
 
-for dir in os.listdir('./plugins/'):
-    sys.path.append(f'./plugins/{dir}/')
+for dir in os.listdir('./src/'):
+    sys.path.append(f'./src/{dir}/')
 
 import pytest
 import base64
@@ -89,6 +88,39 @@ audio_data_base64 = data_base64_fixture(load_audio_file)
 #         inner(response_data)
         
 
+
+@pytest.mark.parametrize("model,config", [("tesseract", {})])
+@pytest.mark.parametrize("image_data_base64", ["test/data/1.png"], indirect=True)
+def test_optical_character_recognition(image_data_base64, model, config, base_url):
+    headers = {'Content-Type': 'application/json'}
+    payload = {
+        "image": image_data_base64,
+        "config": config
+    }
+    
+    new_job_response = requests.post(f'{base_url}/tasks/optical-character-recognition/{model}/jobs', headers=headers, data=json.dumps(payload))
+    
+    # Check status code
+    assert new_job_response.status_code == 200
+    
+    new_job_id = new_job_response.json()["id"]
+    
+    while True:
+        response = requests.get(f'{base_url}/tasks/optical-character-recognition/jobs/{new_job_id}')
+        
+        assert response.status_code == 200
+        
+        response_data = response.json()
+        
+        if response_data["status"] == "complete":
+            break
+        
+        time.sleep(1)
+    
+    def check_response(element):
+        assert isinstance(element, str)
+    
+    check_response(response_data["result"]["text"])
 
 @pytest.mark.parametrize("model,config", [("blip", {"top_k": 50}), ("vit-gpt2", {}), ("blip2", {})])
 @pytest.mark.parametrize("image_data_base64", ["test/data/1.png"], indirect=True)

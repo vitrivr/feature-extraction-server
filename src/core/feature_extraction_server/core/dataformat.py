@@ -189,7 +189,7 @@ class IAudioFormat(IDataType):
         raise ValueError("Invalid data URL media type")
     
     def to_data_url(self)->str:
-        raise NotImplementedError
+        self.to_wav().to_data_url()
     
     def to_wav(self)-> IRawData:
         pass
@@ -240,6 +240,10 @@ class WavAudio(IAudioFormat):
     
     def to_wav(self)-> IRawData:
         return self._data
+    
+    def to_data_url(self) -> str:
+        base64_data = self._data.to_base64()
+        return f"data:audio/wav;base64,{base64_data}"
     
     def to_numpy(self)-> Tuple[np.ndarray, int]:
         byte_stream = self._data.to_binary_stream()

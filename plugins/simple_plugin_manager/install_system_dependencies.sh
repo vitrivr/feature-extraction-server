@@ -1,1 +1,0 @@
-apt-get install -y libsndfile1 ffmpeg libsm6 libxext6
