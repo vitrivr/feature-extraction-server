@@ -1,34 +1,59 @@
 #!/bin/bash
 
-docker build \
-    --build-arg PLUGINPATH=core:simple_plugin_manager:base_api:fastapi \
-    --build-arg CMD_ENTRYPOINT="uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0" \
-    -t featureextractionserver:base .
+# Check if the buildx builder "mybuilder" already exists, if not create it
+if ! docker buildx inspect mybuilder > /dev/null 2>&1; then
+    docker buildx create --name mybuilder --driver docker-container --use
+else
+    docker buildx use mybuilder
+fi
 
-docker build \
-    --build-arg PLUGINPATH=core:simple_plugin_manager:base_api:fastapi:whisper:automated_speech_recognition \
-    --build-arg CMD_ENTRYPOINT="uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0" \
-    -t featureextractionserver:whisper .
+build_image() {
+    local tag_suffix=$1
+    local plugin_path=$2
+    local entrypoint=$3
 
-docker build \
-    --build-arg PLUGINPATH=core:simple_plugin_manager:base_api:fastapi:tesseract:optical_character_recognition \
-    --build-arg CMD_ENTRYPOINT="uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0" \
-    -t featureextractionserver:tesseract .
+    docker buildx build \
+        --platform linux/amd64,linux/arm64,linux/arm/v7 \
+        --build-arg PLUGINPATH="$plugin_path" \
+        --build-arg CMD_ENTRYPOINT="$entrypoint" \
+        --tag "faberf/featureextractionserver:${tag_suffix}" \
+        --push \
+        .
+}
 
-docker build \
-    --build-arg PLUGINPATH=core:simple_plugin_manager:base_api:fastapi:clip_vit_large_patch14:text_embedding:zero_shot_image_classification \
-    --build-arg CMD_ENTRYPOINT="uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0" \
-    -t featureextractionserver:clip .
+# Building base image
+build_image "base" \
+    "core:simple_plugin_manager:base_api:fastapi" \
+    "uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0"
 
-docker build \
-    --build-arg PLUGINPATH=core:simple_plugin_manager:base_api:fastapi:blip2:conditional_image_captioning \
-    --build-arg CMD_ENTRYPOINT="uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0" \
-    -t featureextractionserver:blip2 .
+# Building whisper image
+build_image "whisper" \
+    "core:simple_plugin_manager:base_api:fastapi:whisper:automated_speech_recognition" \
+    "uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0"
 
-docker build \
-    --build-arg PLUGINPATH=core:simple_plugin_manager:base_api:fastapi:audio_diarization:blip:conditional_image_captioning:face_embedding:image_captioning:optical_character_recognition:simple_plugin_manager:vit_gpt2:automated_speech_recognition:blip2:detr_resnet101:face_recognition:image_embedding:owl_vit_base_patch32:tesseract:whisper:base_api:clip_vit_large_patch14:easy_ocr:fastapi:object_detection:pyannote:text_embedding:zero_shot_image_classification \
-    --build-arg CMD_ENTRYPOINT="uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0" \
-    -t featureextractionserver:full .
+# Building tesseract image
+build_image "tesseract" \
+    "core:simple_plugin_manager:base_api:fastapi:tesseract:optical_character_recognition" \
+    "uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0"
+
+# Building clip image
+build_image "clip" \
+    "core:simple_plugin_manager:base_api:fastapi:clip_vit_large_patch14:text_embedding:zero_shot_image_classification" \
+    "uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0"
+
+# Building blip2 image
+build_image "blip2" \
+    "core:simple_plugin_manager:base_api:fastapi:blip2:conditional_image_captioning" \
+    "uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0"
+
+# Building full image
+build_image "full" \
+    "core:simple_plugin_manager:base_api:fastapi:audio_diarization:blip:conditional_image_captioning:face_embedding:image_captioning:optical_character_recognition:simple_plugin_manager:vit_gpt2:automated_speech_recognition:blip2:detr_resnet101:face_recognition:image_embedding:owl_vit_base_patch32:tesseract:whisper:base_api:clip_vit_large_patch14:easy_ocr:fastapi:object_detection:pyannote:text_embedding:zero_shot_image_classification" \
+    "uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0"
+
+# Remove the buildx builder
+docker buildx rm mybuilder
+
 
 # if ((BASH_VERSINFO[0] < 4)); then
 #     echo "Bash version 4.0 or higher is required."

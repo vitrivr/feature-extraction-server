@@ -5,7 +5,11 @@ from decouple import UndefinedValueError
 from decouple import Config, RepositoryEnv
 #from decouple import config
 
-config = Config(RepositoryEnv("./.env"))
+import os
+if os.path.exists("./.env"):
+    config = Config(RepositoryEnv("./.env"))
+else:
+    from decouple import config
 
 import abc
 from simple_plugin_manager.exceptions import InvalidConfigurationException, MissingConfigurationException

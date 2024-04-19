@@ -21,16 +21,6 @@ logger = logging.getLogger(__name__)
 
 
 def wrap_output_model(output_model, batched) -> Type[BaseModel]:
-    """
-    Wraps a Pydantic model in a JobResponse model.
-
-    Parameters:
-        output_model: The Pydantic model type that will be used for the 'result' field.
-
-    Returns:
-        A new Pydantic model class, with 'status' and 'result' fields,
-        where 'result' is an instance of the provided output_model or None.
-    """
     pyd = output_model.to_pydantic(False)
     
     # Dynamic name for the resulting class
