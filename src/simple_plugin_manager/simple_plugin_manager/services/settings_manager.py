@@ -3,11 +3,16 @@ from tabulate import tabulate
 from simple_plugin_manager.exceptions import MissingConfigurationException
 
 from simple_plugin_manager.service import Service
-from simple_plugin_manager.settings import Setting
+from simple_plugin_manager.settings import Setting, FlagSetting
+import sys
+ 
+import logging 
+logger = logging.getLogger(__name__)
 
 class SettingsManager(Service):
-    def __init__(self):
+    def __init__(self, help=False):
         self.settings = []
+        self.help = help
     
     def add_setting(self, setting: Setting):
         if not isinstance(setting, Setting):
@@ -33,9 +38,17 @@ class SettingsManager(Service):
                 pass
         return Config(conf_vars)
     
+    def show_help(self):
+        if self.help:
+            print(self.format_help())
+            sys.exit(0)
+    
     @staticmethod
     def initialize_service():
-        return SettingsManager()
+        helpsetting = FlagSetting("help", "Show this help message")
+        sm = SettingsManager(helpsetting.get())
+        sm.add_setting(helpsetting)
+        return sm
     
 
 class Config:

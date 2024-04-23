@@ -24,32 +24,32 @@ build_image() {
 # Building base image
 build_image "base" \
     "core:simple_plugin_manager:base_api:fastapi" \
-    "uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0"
+    "run-fes --port 8888 --host 0.0.0.0"
 
 # Building whisper image
 build_image "whisper" \
     "core:simple_plugin_manager:base_api:fastapi:whisper:automated_speech_recognition" \
-    "uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0"
+    "run-fes --port 8888 --host 0.0.0.0"
 
 # Building tesseract image
 build_image "tesseract" \
     "core:simple_plugin_manager:base_api:fastapi:tesseract:optical_character_recognition" \
-    "uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0"
+    "run-fes --port 8888 --host 0.0.0.0"
 
 # Building clip image
 build_image "clip" \
     "core:simple_plugin_manager:base_api:fastapi:clip_vit_large_patch14:text_embedding:zero_shot_image_classification" \
-    "uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0"
+    "run-fes --port 8888 --host 0.0.0.0"
 
 # Building blip2 image
 build_image "blip2" \
     "core:simple_plugin_manager:base_api:fastapi:blip2:conditional_image_captioning" \
-    "uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0"
+    "run-fes --port 8888 --host 0.0.0.0"
 
 # Building full image
 build_image "full" \
     "core:simple_plugin_manager:base_api:fastapi:audio_diarization:blip:conditional_image_captioning:face_embedding:image_captioning:optical_character_recognition:simple_plugin_manager:vit_gpt2:automated_speech_recognition:blip2:detr_resnet101:face_recognition:image_embedding:owl_vit_base_patch32:tesseract:whisper:base_api:clip_vit_large_patch14:easy_ocr:fastapi:object_detection:pyannote:text_embedding:zero_shot_image_classification" \
-    "uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888 --host 0.0.0.0"
+    "run-fes --port 8888 --host 0.0.0.0"
 
 # Remove the buildx builder
 docker buildx rm mybuilder

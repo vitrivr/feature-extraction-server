@@ -11,7 +11,7 @@ class ServiceNamespace(ModuleNamespace):
     @staticmethod
     def initialize_service(settings_manager : SettingsManager, service_manager : ServiceManager):
         service_namespace_name_setting = StringSetting("service_namespace", "services", "The name of the namespace where the services should be discovered.")
-        settings_manager.add_setting(service_namespace_name_setting)
+        #settings_manager.add_setting(service_namespace_name_setting)
         name = service_namespace_name_setting.get()
         return ServiceNamespace(name, Service, service_manager=service_manager)
     

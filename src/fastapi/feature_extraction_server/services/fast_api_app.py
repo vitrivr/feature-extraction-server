@@ -36,3 +36,28 @@ def create_app(*args):
     service_manager = spm_entrypoint()
     service_manager.get_service(LogServer).configure_worker()
     return service_manager.get_service(FastApiApp).app
+
+def run_app():
+    os.environ['SERVICE_NAMESPACE'] = 'feature_extraction_server.services'
+    service_manager = spm_entrypoint()
+    service_manager.get_service(LogServer).configure_worker()
+    app = service_manager.get_service(FastApiApp).app
+    
+    settings_manager = service_manager.get_service(SettingsManager)
+    
+    host_setting = StringSetting(name='HOST', default='localhost', description='The host to bind to.')
+    port_setting = IntegerSetting(name='PORT', default=8888, description='The port to bind to.')
+    
+    settings_manager.add_setting(host_setting)
+    settings_manager.add_setting(port_setting)
+    
+    host = host_setting.get()
+    port = port_setting.get()
+    
+    settings_manager.show_help()
+    import uvicorn
+    uvicorn.run(app, host=host, port=port)
+
+
+if __name__ == '__main__':
+    run_app()

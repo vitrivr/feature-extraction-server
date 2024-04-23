@@ -47,3 +47,7 @@ EXPOSE 8888
 ENV CMD_ENTRYPOINT=${CMD_ENTRYPOINT}
 
 CMD ${CMD_ENTRYPOINT}
+
+# # endless loop
+
+# CMD ["sh", "-c", "while true; do sleep 30; done;"]

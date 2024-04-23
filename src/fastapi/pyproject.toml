@@ -15,5 +15,8 @@ dependencies = [
 [tool.flit.module]
 name = "feature_extraction_server.services.fast_api_app"
 
+[project.scripts]
+run-fes = "feature_extraction_server.run_server:entrypoint"
+
 [build]
 script = "flit build"

@@ -4,7 +4,7 @@ import os
 from itertools import chain
 
 # Set the directory to search for pyproject.toml files
-search_dirs = ["feature_extraction_server-core", "plugins"]
+search_dirs = ["src"]
 
 # List to hold all dependencies
 all_deps = []

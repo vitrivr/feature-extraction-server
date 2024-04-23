@@ -14,16 +14,16 @@ This server can accept various media as input and performs various AI tasks, suc
 4. **Add the Desired Plugins to the Path**
    For example:
    ```bash
-   export PYTHONPATH=feature_extraction_server-core:plugins/simple_plugin_manager:plugins/feature_extraction_server-models-clip_vit_large_patch14:plugins/feature_extraction_server-services-base_api:plugins/feature_extraction_server-services-fastapi:plugins/feature_extraction_server-tasks-image_embedding:plugins/feature_extraction_server-tasks-text_embedding:$PYTHONPATH
+   export PYTHONPATH=src/core:src/legacy_api:src/audio_diarization:src/blip:src/conditional_image_captioning:src/face_embedding:src/image_captioning:src/optical_character_recognition:src/simple_plugin_manager:src/vit_gpt2:src/automated_speech_recognition:src/blip2:src/detr_resnet101:src/face_recognition:src/image_embedding:src/owl_vit_base_patch32:src/tesseract:src/whisper:src/base_api:src/clip_vit_large_patch14:src/easy_ocr:src/fastapi:src/object_detection:src/pyannote:src/text_embedding:src/zero_shot_image_classification:$PYTHONPATH
    export LOG_LEVEL=DEBUG
 
    ```
 5. **Run the Server:**
 
-    To run the server, use uvicorn:
+    To run the server, use the entrypoint:
 
     ```bash
-    uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888
+   python run_dev_server.py --port 8888
     ```
 ## Manually Install the Server
 
@@ -36,28 +36,78 @@ This is currently not tested.
    ```bash
    python3 -m pip install flit
    ```
-4. **Install the Core Project**
+4. **Install the Core Project and some core plugins**
    ```bash
-   cd feature_extraction_server-core
+   cd src/core
+   flit install
+   cd ../simple_plugin_manager
+   flit install
+   cd ../fastapi
+   flit install
+   cd ../base_api
    flit install
    ```
 5. **Install any desired Plugins**
    ```bash
-   cd plugins/feature_extraction_server-example_plugin
+   cd src/example_plugin
    flit install
    ```
-6. **Install Gunicorn**
+6. **Run the Server**
    ```bash
-   pip install uvicorn
-   ```
-7. **Run the Server**
-   ```bash
-   uvicorn feature_extraction_server.services.fast_api_app:create_app --port 8888
+   run-fes --port 8888
    ```
 
 ## Run the Server with Docker
 
-TODO
+Follow these steps to run the server using Docker:
+
+
+1. **Install Docker:**
+
+   You need to have Docker installed on your machine. You can download Docker Desktop for Mac or Windows [here](https://www.docker.com/products/docker-desktop). For Linux users, Docker Engine is the appropriate version, and the installation instructions vary by distribution.
+
+2. **Build or Pull the Docker Image:**
+
+   The dockerfile requires the build arguments PLUGINPATH and CMD_ENTRYPOINT to build an image. 
+   
+   ```bash
+       docker buildx build \
+        --platform linux/amd64,linux/arm64,linux/arm/v7 \
+        --build-arg PLUGINPATH="core:simple_plugin_manager:base_api:fastapi" \
+        --build-arg CMD_ENTRYPOINT="run-fes --port 8888 --host 0.0.0.0" \
+        --tag "featureextractionserver:my_custom_tag" \
+        --push \
+        .
+   ```
+
+   You can check build_docker.sh for more examples. Alternatively you can use a prebuilt image from docker hub. Choose a tag from docker hub https://hub.docker.com/r/faberf/featureextractionserver/tags. For example, if you want to have pull an image from Docker hub with all plugins installed, use the following command:
+
+   ```bash
+   docker pull faberf/featureextractionserver:full
+   ```
+
+3. **Run the Docker Image:**
+
+   After pulling the image, you can run it using the following command:
+
+   ```bash
+   sudo docker run -it -p 5000:8888 -v ~/.cache:/root/.cache -v ./base_logs:/app/logs -e LOG_LEVEL=DEBUG -t faberf/featureextractionserver:base
+   ```
+   
+   This command will start a Docker container from the image and map port 5000 of your machine to port 5000 of the Docker container. This also demonstrates how you can bind the `/root/.cache` directory to your local `.cache` directory in order to persist the downloaded machine learning models between runs, saving time.
+
+4. **Access the Server:**
+
+   You should now be able to access the server at `http://localhost:5000`. If you are using Docker Toolbox (generally for older systems), the Docker IP will likely be something other than `localhost`, typically `192.168.99.100`. In this case, the server will be accessible at `http://192.168.99.100:5000`.
+
+Note: To stop the Docker container, press `CTRL + C` in the terminal window. If that does not work, open a new terminal window and run `docker ps` to get the `CONTAINER_ID`, and then run `docker stop CONTAINER_ID` to stop the container. 
+
+Note: If the server crashes, then it likely ran out of memory. If you're running on Docker Desktop, you can increase the memory allocated to Docker in Docker's preferences:
+   - For Mac: Docker menu > Preferences > Resources > Memory
+   - For Windows: Docker menu > Settings > Resources > Memory
+
+32 GB is a good amount. This will only work if your host machine has enough free memory.
+
 
 
 ## Configuring the Server

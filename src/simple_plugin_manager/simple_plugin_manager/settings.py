@@ -95,7 +95,7 @@ class FlagSetting(Setting):
         return NoValue
     
     def check(self, value):
-        return value is bool
+        return type(value) is bool
 
 class StringListSetting(Setting):
     
