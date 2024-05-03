@@ -91,7 +91,7 @@ Follow these steps to run the server using Docker:
    After pulling the image, you can run it using the following command:
 
    ```bash
-   sudo docker run -it -p 5000:8888 -v ~/.cache:/root/.cache -v ./base_logs:/app/logs -e LOG_LEVEL=DEBUG -t faberf/featureextractionserver:base
+   sudo docker run -it -p 5000:8888 -v ~/.cache:/root/.cache -v ./logs:/app/logs -e LOG_LEVEL=DEBUG -t faberf/featureextractionserver:full
    ```
    
    This command will start a Docker container from the image and map port 5000 of your machine to port 5000 of the Docker container. This also demonstrates how you can bind the `/root/.cache` directory to your local `.cache` directory in order to persist the downloaded machine learning models between runs, saving time.
