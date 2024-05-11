@@ -1,0 +1,17 @@
+[project]
+name = "feature_extraction_server-tasks-text_query_embedding"
+version = "0.1.0"
+description = "Text Query Embedding Task for FES."
+authors = [
+    {name = "Fynn Faber", email = "fynn.f.faber@proton.me"}
+]
+requires-python = ">=3.11"
+
+dependencies = [
+]
+
+[tool.flit.module]
+name = "feature_extraction_server.tasks.text_query_embedding"
+
+[build]
+script = "flit build"
