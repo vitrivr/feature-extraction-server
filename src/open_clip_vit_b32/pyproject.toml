@@ -1,0 +1,18 @@
+[project]
+name = "feature_extraction_server-models-open_clip_vit_b32"
+version = "0.1.0"
+description = "CLIP for FES."
+authors = [
+    {name = "Fynn Faber", email = "fynn.f.faber@proton.me"}
+]
+requires-python = ">=3.11"
+
+dependencies = [
+    "open_clip_torch"
+]
+
+[tool.flit.module]
+name = "feature_extraction_server.models.open_clip_vit_b32"
+
+[build]
+script = "flit build"

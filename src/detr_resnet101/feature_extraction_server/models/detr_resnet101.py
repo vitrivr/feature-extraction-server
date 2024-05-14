@@ -10,11 +10,17 @@ class DetrResnet101(Model):
         from transformers import DetrImageProcessor, DetrForObjectDetection
         self.processor = DetrImageProcessor.from_pretrained("facebook/detr-resnet-101")
         self.model = DetrForObjectDetection.from_pretrained("facebook/detr-resnet-101")
+        
+        self.model.eval()
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model.to(self.device)
 
     def object_detection(self, image, config={}):
         image = image.to_numpy()
         inputs = self.processor(images=image, return_tensors="pt")
-        outputs = self.model(**inputs, **config)
+        
+        with torch.no_grad():
+            outputs = self.model(**inputs, **config)
 
         # convert outputs (bounding boxes and class logits) to COCO API
         # let's only keep detections with score > 0.9

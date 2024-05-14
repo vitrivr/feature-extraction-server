@@ -21,6 +21,7 @@ class Blip2(Model):
             "Salesforce/blip2-opt-2.7b", torch_dtype=torch.float
         )
         self.condgenmodel.to(self.device)
+        self.condgenmodel.eval()
 
     def batched_conditional_image_captioning(self, image, text, config={}):
         

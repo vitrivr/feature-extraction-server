@@ -12,13 +12,13 @@ class Blip(Model):
         import torch
         from feature_extraction_server.core.utils import batch
 
-        self.processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
-        self.model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
-
         self.defaults = {}
         self.processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
         self.model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
-
+        
+        self.model.eval()
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model.to(self.device)
 
     def batched_image_captioning(self, image, config={}):
         # Set defaults if not provided

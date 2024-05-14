@@ -23,15 +23,21 @@ class E5mistral7bInstruct(Model):
 
         self.model = AutoModel.from_pretrained('intfloat/e5-mistral-7b-instruct')
         self.tokenizer = AutoTokenizer.from_pretrained('intfloat/e5-mistral-7b-instruct')
+        
+        self.model.eval()
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model.to(self.device)
 
     def _embed(self, text):
         max_length = 4096
         batch_dict = self.tokenizer(text, max_length=max_length - 1, return_attention_mask=False, padding=False, truncation=True)
         batch_dict['input_ids'] = [input_ids + [self.tokenizer.eos_token_id] for input_ids in batch_dict['input_ids']]
         batch_dict = self.tokenizer.pad(batch_dict, padding=True, return_attention_mask=True, return_tensors='pt')
-        
-        outputs = self.model(**batch_dict)
+        with torch.no_grad():
+            outputs = self.model(**batch_dict)
         embeddings = last_token_pool(outputs.last_hidden_state, batch_dict['attention_mask'])
+        #normalize
+        embeddings = F.normalize(embeddings, p=2, dim=-1)
         return {"embedding":embeddings.tolist()}
 
     def batched_text_embedding(self, text, config={}):
