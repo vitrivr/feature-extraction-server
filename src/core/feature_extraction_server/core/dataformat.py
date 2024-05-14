@@ -6,6 +6,9 @@ import re
 import soundfile as sf
 import pydub
 
+
+
+
 def process_dataurl(dataurl):
     """
     Process a dataurl and extract media type, encoding, and data.
@@ -280,6 +283,7 @@ class PyDubAudio(IAudioFormat):
 import cv2, PIL.Image
 import abc
 
+PIL.Image.MAX_IMAGE_PIXELS = 933120000
 
 class IImageFormat(IDataType):
     
