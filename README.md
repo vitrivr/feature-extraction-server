@@ -80,10 +80,10 @@ Follow these steps to run the server using Docker:
         .
    ```
 
-   You can check build_docker.sh for more examples. Alternatively you can use a prebuilt image from docker hub. Choose a tag from docker hub https://hub.docker.com/r/faberf/featureextractionserver/tags. For example, if you want to have pull an image from Docker hub with all plugins installed, use the following command:
+   You can check build_docker.sh for more examples. Alternatively you can use a prebuilt image from docker hub. Choose a tag from docker hub https://hub.docker.com/r/vitrivr/featureextractionserver/tags. For example, if you want to have pull an image from Docker hub with all plugins installed, use the following command:
 
    ```bash
-   docker pull faberf/featureextractionserver:full
+   docker pull vitrivr/featureextractionserver:full
    ```
 
 3. **Run the Docker Image:**

@@ -16,7 +16,8 @@ build_image() {
         --platform linux/amd64,linux/arm64,linux/arm/v7 \
         --build-arg PLUGINPATH="$plugin_path" \
         --build-arg CMD_ENTRYPOINT="$entrypoint" \
-        --tag "$DOCKER_USERNAME/featureextractionserver:${tag_suffix}" \
+        --tag "$DOCKER_USERNAME/featureextractionserver:${tag_suffix}-$VERSION" \
+        --tag "$DOCKER_USERNAME/featureextractionserver:${tag_suffix}-latest" \
         --push \
         .
 }
