@@ -1,5 +1,5 @@
 [project]
-name = "feature_extraction_server-models-dino_v2_vits_14"
+name = "feature_extraction_server-models-dino_v2_vits14"
 version = "0.1.0"
 description = "DINO v2 for FES."
 authors = [
@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [tool.flit.module]
-name = "feature_extraction_server.models.dino_v2_vits_14"
+name = "feature_extraction_server.models.dino_v2_vits14"
 
 [build]
 script = "flit build"

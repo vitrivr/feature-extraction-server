@@ -8,7 +8,8 @@ authors = [
 requires-python = ">=3.11"
 
 dependencies = [
-    "open_clip_torch"
+    "open_clip_torch",
+    "transformers"
 ]
 
 [tool.flit.module]

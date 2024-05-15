@@ -3,7 +3,7 @@ class Pyannote(Model):
     def _load_model(self):
         global pipeline
         from pyannote.audio import Pipeline
-        self.pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization", use_auth_token="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")
+        self.pipeline = Pipeline.from_pretrained("pyannote/speaker-diarization-3.1", use_auth_token="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")
 
     def audio_diarization(self, audio, config={}):
         diarization = self.pipeline(audio.to_binary_stream())

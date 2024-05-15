@@ -56,7 +56,7 @@ class ExecutionState(Service):
                     error_msg = f"Cannot start model {self.name} because it is in the state '{state}'."
                     logger.debug(error_msg)
                     raise ModelAlreadyStartedException(error_msg)
-                self.execution_state.model_state[self.name] = {"state": "starting"}
+                self.execution_state.model_state[self.name] = {"state": ModelState.starting}
         
         def set_loading(self):
             self._state = {"state": ModelState.loading}

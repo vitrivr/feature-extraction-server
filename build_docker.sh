@@ -30,6 +30,11 @@ build_image "base" \
     "core:simple_plugin_manager:base_api:fastapi" \
     "run-fes --port 8888 --host 0.0.0.0"
 
+# Building open clip image
+build_image "open_clip_vit_b32" \
+    "core:simple_plugin_manager:base_api:fastapi:open_clip_vit_b32:text_embedding:zero_shot_image_classification:image_embedding" \
+    "run-fes --port 8888 --host 0.0.0.0"
+
 # Building dino image
 build_image "dino" \
     "core:simple_plugin_manager:base_api:fastapi:dino_v2_vits14:image_embedding" \

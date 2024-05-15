@@ -59,6 +59,8 @@ This is currently not tested.
 
 ## Run the Server with Docker
 
+NOTE: currently, the vitrivr username on docker hub does not have the correct images. Use the faberf username instead.
+
 Follow these steps to run the server using Docker:
 
 
@@ -100,7 +102,7 @@ Follow these steps to run the server using Docker:
 
    You should now be able to access the server at `http://localhost:5000`. If you are using Docker Toolbox (generally for older systems), the Docker IP will likely be something other than `localhost`, typically `192.168.99.100`. In this case, the server will be accessible at `http://192.168.99.100:5000`.
 
-Note: To stop the Docker container, press `CTRL + C` in the terminal window. If that does not work, open a new terminal window and run `docker ps` to get the `CONTAINER_ID`, and then run `docker stop CONTAINER_ID` to stop the container. 
+Note: To stop the Docker container, press `CTRL | C` in the terminal window. If that does not work, open a new terminal window and run `docker ps` to get the `CONTAINER_ID`, and then run `docker stop CONTAINER_ID` to stop the container. 
 
 Note: If the server crashes, then it likely ran out of memory. If you're running on Docker Desktop, you can increase the memory allocated to Docker in Docker's preferences:
    - For Mac: Docker menu > Preferences > Resources > Memory
@@ -114,82 +116,60 @@ Note: If the server crashes, then it likely ran out of memory. If you're running
 
 Settings can be set using either a command line argument (CLA) an environment variable (EV) or an `.env` file (EF). 
 
-TODO
+The following settings come from the core plugin.
+
+| Name                  | Command Line Argument   | Description                                                                     |
+|-----------------------|-------------------------|---------------------------------------------------------------------------------|
+| LOG_LEVEL             | --log-level             | The log level. Must be one of ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'] |
+| LOG_PATH              | --log-path              | The path to the log file.                                                       |
+| DEFAULT_CONSUMER_TYPE | --default-consumer-type | The default consumer type. Must be one of ['single_thread_consumer']            |
+
+Additional settings may be defined or required in other plugins.
+
 
 ## Extending the Server
 
-The server is extensible through plugins. The core system uses namespace packages to discover modules from plugins. There are four namespaces:
+The server is extensible through plugins.
 
-TODO
+For creating new plugins which use the extraction backend to create new interfaces (such as CLIs etc), see [here](src/core/README.md).
 
+For creating new plugins which add new endpoints to the REST API, see the fast api plugin [readme](src/fastapi/).
 
+For creating new tasks, see [here](src/core/README.md).
 
-## Task and Model Plugins
-
-### Image Captioning
-
-This task allows you to generate a text caption that describes the visual content of an image. The task requires input with the specific keys:
-
-| Key | Required | Description |
-| --- | --- | --- |
-| `image` | Yes | The image that needs captioning |
-| `config` | No | Any additional arguments (depending on the model) |
-
-The task responds with a string that captions the image.
-
-To use this task, at least one compatible model plugin must be installed: 
-- blip
-- blip2
-- vit_gpt2
+For creating new models, see [here](src/core/README.md).
 
 
+## Using the Server
 
-### Conditional Image Captioning
+- See [this](src/fastapi/README.md) page for more information on configuring the FastAPI REST server
+- [This](src/base_api/README.md) plugin extends the server with endpoints that allow the user to create new jobs and get results.
+- [This](src/legacy_api/README.md) plugin defines simpler endpoints that allow the user to both create new jobs and get results in a single call.
 
-This task allows you to use a text prompt to condition an image captioning task. The task requires input with the specific keys:
 
-| Key | Required | Description |
-| --- | --- | --- |
-| `image` | Yes | The image that needs captioning |
-|`text` | Yes | A specified prefix for the caption that should be generated. For example `"Question: What is depicted in this photograph? Answer:"` |
-| `config` | No | Any additional arguments (depending on the model) |
+## Tasks
 
-The task responds with a string that captions the image.
+Installing these plugins adds tasks to the server which can be accessed through a variety of interfaces (see above). To properly use them, compatible models must also be installed.
 
-To use this task, at least one compatible model plugin must be installed: 
-- blip
-- blip2
+- [Audio Diarization](src/audio_diarization/README.md)
+- [Automated Speech Recognition](src/automated_speech_recognition/README.md)
+- [Conditional Image Captioning](src/conditional_image_captioning/README.md)
+- [Face Embedding](src/face_embedding/README.md)
+- [Image Captioning](src/image_captioning/README.md)
+- [Image Embedding](src/image_embedding/README)
+- [Object Detection](src/object_detection/README.md)
+- [Optical Character Recognition](src/optical_character_recognition/README.md)
+- [Text Embedding](src/text_embedding/README.md)
+- [Text Query Embedding](src/text_query_embedding/README.md)
+- [Zero Shot Image Classification](src/zero_shot_image_classification/README)
 
-### Automated Speech Recognition
 
-This task allows you to generate text from speech. The task requires input with the specific keys:
 
-| Key | Required | Description |
-| --- | --- | --- |
-| `audio` | Yes | The audio from which the speech needs to be generated |
-| `config` | No | Any additional arguments (depending on the model) |
 
-The task responds with a string of recognized audio.
 
-To use this task, at least one compatible model plugin must be installed: 
-- whisper
 
-### Zero Shot Image Classification
 
-This task allows you to to match an image to a class from a catalogue of classes. The task requires input with the specific keys:
-
-| Key | Required | Description |
-| --- | --- | --- |
-| `image` | Yes | The image that needs to classified |
-|`classes` | Yes | A list of strings that represents the catalogue of classes |
-| `config` | No | Any additional arguments (depending on the model) |
-
-The task responds with a list of floating point numbers between 0 and 1 that represent the probability that the image belongs to a class.
-
-To use this task, at least one compatible model plugin must be installed: 
-- clip_vit_large_patch14
-
-### Object Detection
+<!-- ### Object Detection
 
 This task allows you to identify regions of an image that contain objects. The task requires input with the specific keys:
 
@@ -222,10 +202,5 @@ The task responds with a dictionary that includes the keys `boxes`, `labels`, `s
 ```
 
 To use this task, at least one compatible model plugin must be installed: 
-- owlvit_base_patch32
+- owlvit_base_patch32 -->
 
-## API Plugins
-
-TODO
-
-Go to /docs to see the API endpoints.
