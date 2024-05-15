@@ -16,7 +16,7 @@ build_image() {
         --platform linux/amd64,linux/arm64,linux/arm/v7 \
         --build-arg PLUGINPATH="$plugin_path" \
         --build-arg CMD_ENTRYPOINT="$entrypoint" \
-        --tag "faberf/featureextractionserver:${tag_suffix}" \
+        --tag "$DOCKER_USERNAME/featureextractionserver:${tag_suffix}" \
         --push \
         .
 }
@@ -24,6 +24,11 @@ build_image() {
 # Building base image
 build_image "base" \
     "core:simple_plugin_manager:base_api:fastapi" \
+    "run-fes --port 8888 --host 0.0.0.0"
+
+# Building base image
+build_image "dino" \
+    "core:simple_plugin_manager:base_api:fastapi:dino_v2_vits14:image_embedding" \
     "run-fes --port 8888 --host 0.0.0.0"
 
 # Building whisper image
@@ -38,7 +43,7 @@ build_image "tesseract" \
 
 # Building clip image
 build_image "clip" \
-    "core:simple_plugin_manager:base_api:fastapi:clip_vit_large_patch14:text_embedding:zero_shot_image_classification" \
+    "core:simple_plugin_manager:base_api:fastapi:clip_vit_large_patch14:text_embedding:zero_shot_image_classification:image_embedding" \
     "run-fes --port 8888 --host 0.0.0.0"
 
 # Building blip2 image
