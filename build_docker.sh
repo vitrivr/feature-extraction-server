@@ -43,7 +43,7 @@ build_image "tesseract" \
     "run-fes --port 8888 --host 0.0.0.0"
 
 # Building clip image
-build_image "clip" \
+build_image "clip_vit_large_patch14" \
     "core:simple_plugin_manager:base_api:fastapi:clip_vit_large_patch14:text_embedding:zero_shot_image_classification:image_embedding" \
     "run-fes --port 8888 --host 0.0.0.0"
 
@@ -54,7 +54,7 @@ build_image "blip2" \
 
 # Building full image
 build_image "full" \
-    "core:simple_plugin_manager:base_api:fastapi:audio_diarization:blip:conditional_image_captioning:face_embedding:image_captioning:optical_character_recognition:simple_plugin_manager:vit_gpt2:automated_speech_recognition:blip2:detr_resnet101:face_recognition:image_embedding:owl_vit_base_patch32:tesseract:whisper:base_api:clip_vit_large_patch14:easy_ocr:fastapi:object_detection:pyannote:text_embedding:zero_shot_image_classification" \
+    "core:simple_plugin_manager:base_api:fastapi:audio_diarization:blip:conditional_image_captioning:face_embedding:image_captioning:optical_character_recognition:simple_plugin_manager:vit_gpt2:automated_speech_recognition:blip2:detr_resnet101:face_recognition:image_embedding:owl_vit_base_patch32:tesseract:whisper:base_api:clip_vit_large_patch14:easy_ocr:fastapi:object_detection:pyannote:text_embedding:zero_shot_image_classification:dino_v2_vits14" \
     "run-fes --port 8888 --host 0.0.0.0"
 
 # Remove the buildx builder
