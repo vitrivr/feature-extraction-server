@@ -11,7 +11,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest  # The type of runner that the job will run on.
-
+    env:
+      DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }} 
     steps:
     - name: Checkout code
       uses: actions/checkout@v2  # Checks-out your repository under $GITHUB_WORKSPACE
