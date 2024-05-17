@@ -1,7 +1,7 @@
 # Dino V2 ViTs 14
 This plugin contains the Dino V2 ViTs 14 model which implements the [image_embedding](../image_embedding/README.md) task.
 
-Vector Length: TODO
+Vector Length: 384
 
 ## Installation
 

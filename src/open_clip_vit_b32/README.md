@@ -1,7 +1,7 @@
 # Open CLIP ViT B32
 This plugin contains the Open CLIP ViT B32 model which implements the [image_embedding](../image_embedding/README.md), [text_embedding](../text_embedding/README.md) and [zero_shot_image_classification](../zero_shot_image_classification/README.md) tasks.
 
-Vector Length: TODO
+Vector Length: 512
 
 ## Installation
 

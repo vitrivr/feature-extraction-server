@@ -1,7 +1,7 @@
 # CLIP ViT Large Patch 14
 This plugin contains the CLIP ViT Large Patch 14 model which implements the [image_embedding](../image_embedding/README.md), [text_embedding](../text_embedding/README.md) and [zero_shot_image_classification](../zero_shot_image_classification/README.md) tasks.
 
-Vector Length: TODO
+Vector Length: 768
 
 ## Installation
 
