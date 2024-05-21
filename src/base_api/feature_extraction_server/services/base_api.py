@@ -16,6 +16,8 @@ import pydantic
 from starlette.responses import Response
 from starlette.status import HTTP_200_OK
 
+import threading as th
+
 logger = logging.getLogger(__name__)
 
 
@@ -111,6 +113,7 @@ class BaseApi(Service):
                 out = self._features(job_id=job)
                 if "result" in out and batched:
                     out["result"] = list(task.get_output_data_model().unroll(out["result"]))
+                print(job, out)
                 return out
             except Exception as e:
                 logger.error(f"Error while fetching job {job}: {e}")
@@ -126,9 +129,11 @@ class BaseApi(Service):
             job.reraise_exception()
         if state == JobState.complete:
             self._active_jobs.pop(job_id)
-            return jsonable_encoder({"status": state, "result": job.get_result()})
+            result = job.get_result()
+            #logger.debug({"status": state, "result": result})
+            return jsonable_encoder({"status": state, "result": result})
         else:
-            return jsonable_encoder({"status": job.get_state()})
+            return jsonable_encoder({"status": state})
         
     
     def make_new_job(self, task, batched):
