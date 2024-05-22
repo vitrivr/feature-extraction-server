@@ -99,12 +99,6 @@ class BaseApi(Service):
             app.add_api_route(f'/api/tasks/{tn}/batched/' + '{model}/jobs', self.make_new_job(task, batched=True), methods=['POST'], name=f"new-batched-job", tags=[tn])
             app.add_api_route(f'/api/tasks/{tn}/batched/jobs/' + '{job}', self.make_features(task, batched=True), methods=['GET'], name=f"get-batched-job-results", tags=[tn])
             
-             
-        # for model in self._extraction_backend.iterate_models():
-        #     for task in model.iterate_tasks():
-        #         app.add_api_route(f'/api/models/{model.name}/tasks/{task.name}/features', wrap_function(self._features, [task.name, model.name], task.get_input_schema(), task.get_output_schema()), methods=['POST'], name=f"features", tags=[model.name])
-        #         app.add_api_route(f'/api/tasks/{task.name}/models/{model.name}/features', wrap_function(self._features, [task.name, model.name], task.get_input_schema(), task.get_output_schema()), methods=['POST'], name=f"features", tags=[task.name])
-    
     
     def make_features(self, task, batched):
         wrapped_output_model = wrap_output_model(task.get_output_data_model(), batched)
@@ -113,7 +107,6 @@ class BaseApi(Service):
                 out = self._features(job_id=job)
                 if "result" in out and batched:
                     out["result"] = list(task.get_output_data_model().unroll(out["result"]))
-                print(job, out)
                 return out
             except Exception as e:
                 logger.error(f"Error while fetching job {job}: {e}")
@@ -130,7 +123,6 @@ class BaseApi(Service):
         if state == JobState.complete:
             self._active_jobs.pop(job_id)
             result = job.get_result()
-            #logger.debug({"status": state, "result": result})
             return jsonable_encoder({"status": state, "result": result})
         else:
             return jsonable_encoder({"status": state})
