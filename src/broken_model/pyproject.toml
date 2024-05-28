@@ -1,0 +1,19 @@
+[project]
+name = "feature_extraction_server-models-clip_vit_large_patch14"
+version = "0.1.0"
+description = "CLIP for FES."
+authors = [
+    {name = "Fynn Faber", email = "fynn.f.faber@proton.me"}
+]
+requires-python = ">=3.11"
+
+dependencies = [
+    "torch==2.0",
+    "transformers"
+]
+
+[tool.flit.module]
+name = "feature_extraction_server.models.clip_vit_large_patch14"
+
+[build]
+script = "flit build"

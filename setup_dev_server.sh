@@ -1,22 +1,18 @@
 #!/bin/bash
 
-# Navigate to the src directory where the packages are located
-cd src
-
 # Loop through each sub-directory in src
-for dir in */ ; do
-    # Check if 'install_system_dependencies.sh' exists and is executable
-    if [[ -x "${dir}install_system_dependencies.sh" ]]; then
+for dir in src/* ; do
+    # Check if 'install_system_dependencies.sh' exists
+    if [[ -f "${dir}/install_system_dependencies.sh" ]]; then
+        # Ensure the script is executable
+        chmod +x "${dir}/install_system_dependencies.sh"
         echo "Running system dependencies installation in ${dir}"
         # Run the install script
-        ./${dir}install_system_dependencies.sh
+        ./${dir}/install_system_dependencies.sh
     else
         echo "No install script in ${dir}, skipping..."
     fi
 done
-
-# Navigate back to the root directory
-cd ..
 
 # Execute Python script to extract development requirements
 echo "Extracting development requirements..."
