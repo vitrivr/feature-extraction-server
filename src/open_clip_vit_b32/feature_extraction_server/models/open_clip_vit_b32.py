@@ -31,7 +31,7 @@ class OpenClipVitB32(Model):
     def batched_image_embedding(self, image, config={}):
         img = np.array([self.transform_image(x.to_pillow())[:3] for x in image])
         with torch.no_grad():
-            image_features = F.normalize(self.model.encode_image(torch.from_numpy(img)), p=2, dim=-1)
+            image_features = F.normalize(self.model.encode_image(torch.from_numpy(img).to(self.device)), p=2, dim=-1)
             gc.collect()
             return {"embedding":image_features.tolist()}
     
@@ -40,7 +40,7 @@ class OpenClipVitB32(Model):
         img = np.array([self.transform_image(x.to_pillow())[:3] for x in image])
         
         with torch.no_grad():
-            image_features = F.normalize(self.model.encode_image(torch.from_numpy(img)), p=2, dim=-1)
+            image_features = F.normalize(self.model.encode_image(torch.from_numpy(img).to(self.device)), p=2, dim=-1)
             text_features = F.normalize(self.model.encode_text(tokenized_classes), p=2, dim=-1)
             
             return {"probabilities":(image_features @ text_features.T).softmax(dim=-1).tolist()}

@@ -1,7 +1,7 @@
 # E5 Mistral 7B Instruct
 This plugin contains the E5 Mistral 7B Instruct model which implements the [text_embedding](../text_embedding/README.md) and [text_query_embedding](../text_query_embedding/README.md) tasks.
 
-Vector Length: TODO
+Vector Length: 4096
 
 ## Installation
 
