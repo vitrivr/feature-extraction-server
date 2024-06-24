@@ -166,3 +166,4 @@ cython_debug/
 **/.DS_Store
 
 plugins/.DS_Store
+.idea/
