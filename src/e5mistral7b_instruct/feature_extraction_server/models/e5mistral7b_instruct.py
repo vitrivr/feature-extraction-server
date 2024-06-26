@@ -1,5 +1,7 @@
 
 from feature_extraction_server.core.model import Model
+from simple_plugin_manager.services.settings_manager import SettingsManager
+from simple_plugin_manager.settings import FlagSetting
 
 def last_token_pool(last_hidden_states,
                  attention_mask):
@@ -12,6 +14,10 @@ def last_token_pool(last_hidden_states,
         return last_hidden_states[torch.arange(batch_size, device=last_hidden_states.device), sequence_lengths]
 
 class E5mistral7bInstruct(Model):
+    def __init__(self, settings_manager: SettingsManager):
+        no_cuda_setting = FlagSetting("NO_CUDA", "If set, the model will not use CUDA.")
+        settings_manager.add_setting(no_cuda_setting)
+        self.no_cuda = no_cuda_setting.get()
 
     def _load_model(self):
         global torch, F, Tensor, AutoTokenizer, AutoModel
@@ -25,7 +31,7 @@ class E5mistral7bInstruct(Model):
         self.tokenizer = AutoTokenizer.from_pretrained('intfloat/e5-mistral-7b-instruct')
         
         self.model.eval()
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cuda" if torch.cuda.is_available() and not self.no_cuda else "cpu")
         self.model.to(self.device)
 
     def _embed(self, text):

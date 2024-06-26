@@ -1,9 +1,15 @@
 
 
 from feature_extraction_server.core.model import Model
-
+from simple_plugin_manager.services.settings_manager import SettingsManager
+from simple_plugin_manager.settings import FlagSetting
 
 class Blip(Model):
+    
+    def __init__(self, settings_manager: SettingsManager):
+        no_cuda_setting = FlagSetting("NO_CUDA", "If set, the model will not use CUDA.")
+        settings_manager.add_setting(no_cuda_setting)
+        self.no_cuda = no_cuda_setting.get()
 
     def _load_model(self):
         global torch, batch 
@@ -17,7 +23,7 @@ class Blip(Model):
         self.model = BlipForConditionalGeneration.from_pretrained("Salesforce/blip-image-captioning-base")
         
         self.model.eval()
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cuda" if torch.cuda.is_available() and not self.no_cuda else "cpu")
         self.model.to(self.device)
 
     def batched_image_captioning(self, image, config={}):
