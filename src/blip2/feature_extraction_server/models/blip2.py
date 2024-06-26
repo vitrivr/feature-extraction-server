@@ -1,5 +1,6 @@
 
 from feature_extraction_server.core.model import Model
+from simple_plugin_manager.settings import FlagSetting
 
 
 class Blip2(Model):
@@ -11,10 +12,13 @@ class Blip2(Model):
         import torch
         from transformers import Blip2Processor, Blip2ForConditionalGeneration
         from feature_extraction_server.core.utils import batch
+        
+        no_cuda_setting = FlagSetting("NO_CUDA", "If set, the model will not use CUDA.")
+        self.no_cuda = no_cuda_setting.get()
 
         self.defaults = {}
 
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.device = "cuda" if torch.cuda.is_available() and not self.no_cuda else "cpu"
 
         self.processor = Blip2Processor.from_pretrained("Salesforce/blip2-opt-2.7b")
         self.condgenmodel = Blip2ForConditionalGeneration.from_pretrained(
