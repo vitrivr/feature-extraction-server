@@ -5,14 +5,12 @@ from simple_plugin_manager.services.settings_manager import SettingsManager
 from simple_plugin_manager.settings import FlagSetting
 
 class Blip(Model):
-    
-    def __init__(self, settings_manager: SettingsManager):
-        no_cuda_setting = FlagSetting("NO_CUDA", "If set, the model will not use CUDA.")
-        settings_manager.add_setting(no_cuda_setting)
-        self.no_cuda = no_cuda_setting.get()
 
     def _load_model(self):
         global torch, batch 
+        
+        no_cuda_setting = FlagSetting("NO_CUDA", "If set, the model will not use CUDA.")
+        self.no_cuda = no_cuda_setting.get()
         
         from transformers import BlipProcessor, BlipForConditionalGeneration
         import torch

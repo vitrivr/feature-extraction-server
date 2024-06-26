@@ -14,10 +14,7 @@ def last_token_pool(last_hidden_states,
         return last_hidden_states[torch.arange(batch_size, device=last_hidden_states.device), sequence_lengths]
 
 class E5mistral7bInstruct(Model):
-    def __init__(self, settings_manager: SettingsManager):
-        no_cuda_setting = FlagSetting("NO_CUDA", "If set, the model will not use CUDA.")
-        settings_manager.add_setting(no_cuda_setting)
-        self.no_cuda = no_cuda_setting.get()
+
 
     def _load_model(self):
         global torch, F, Tensor, AutoTokenizer, AutoModel
@@ -26,6 +23,9 @@ class E5mistral7bInstruct(Model):
 
         from torch import Tensor
         from transformers import AutoTokenizer, AutoModel
+        
+        no_cuda_setting = FlagSetting("NO_CUDA", "If set, the model will not use CUDA.")
+        self.no_cuda = no_cuda_setting.get()
 
         self.model = AutoModel.from_pretrained('intfloat/e5-mistral-7b-instruct')
         self.tokenizer = AutoTokenizer.from_pretrained('intfloat/e5-mistral-7b-instruct')
