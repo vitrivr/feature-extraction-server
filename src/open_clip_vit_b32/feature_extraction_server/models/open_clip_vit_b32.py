@@ -1,8 +1,15 @@
 
 from feature_extraction_server.core.model import Model
+from simple_plugin_manager.services.settings_manager import SettingsManager
+from simple_plugin_manager.settings import FlagSetting
 import gc
 
 class OpenClipVitB32(Model):
+    
+    def __init__(self, settings_manager: SettingsManager):
+        no_cuda_setting = FlagSetting("NO_CUDA", "If set, the model will not use CUDA.")
+        settings_manager.add_setting(no_cuda_setting)
+        self.no_cuda = no_cuda_setting.get()
 
     def _load_model(self):
         global F, torch, np
@@ -11,7 +18,7 @@ class OpenClipVitB32(Model):
         import open_clip
         import numpy as np
         
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.device = torch.device("cuda" if torch.cuda.is_available() and not self.no_cuda else "cpu")
 
         model, _, preprocess = open_clip.create_model_and_transforms('xlm-roberta-base-ViT-B-32',
                                                                     pretrained='laion5b_s13b_b90k')
