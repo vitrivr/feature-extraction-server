@@ -3978,6 +3978,32 @@
         ],
         "title": "TextQueryEmbeddingOutput"
       },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+                  "type": "string"
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
       "ZeroShotImageClassificationInput": {
         "properties": {
           "image": {
