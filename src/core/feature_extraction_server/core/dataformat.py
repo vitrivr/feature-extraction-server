@@ -326,7 +326,7 @@ class IImageFormat(IDataType):
         raise ValueError("Invalid data URL media type")
     
     def to_data_url(self)->str:
-        raise NotImplementedError
+        return f"data:image/png;base64,{self.to_png().to_base64()}"
     
     @abc.abstractmethod
     def to_png(self)-> IRawData:
@@ -424,6 +424,9 @@ class PngImage(IImageFormat):
         # Convert RGB to BGR
         return cv2.cvtColor(np.array(self.to_pillow()), cv2.COLOR_RGB2BGR)
     
+    def to_data_url(self) -> str:
+        return f"data:image/png;base64,{self.to_png().to_base64()}"
+    
 class JpegImage(IImageFormat):
     
     def __init__(self, data: IRawData):
@@ -448,6 +451,9 @@ class JpegImage(IImageFormat):
     def to_opencv(self) -> np.ndarray:
         # Convert RGB to BGR
         return cv2.cvtColor(np.array(self.to_pillow()), cv2.COLOR_RGB2BGR)
+    
+    def to_data_url(self) -> str:
+        return f"data:image/jpeg;base64,{self.to_jpeg().to_base64()}"
 
 class NumpyImage(IImageFormat):
     

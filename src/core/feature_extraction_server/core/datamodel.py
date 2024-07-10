@@ -42,7 +42,7 @@ class DataModel:
     def preprocess(self, data: dict, batched: bool):
         output_data = {}
         for field in self.fields:
-            if field.optional and field.name not in data:
+            if field.optional and data.get(field.name) is None:
                 continue
             if isinstance(field.type, type) and issubclass(field.type, IDataType):
                 if field.batched and batched:

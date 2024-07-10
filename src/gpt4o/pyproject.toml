@@ -1,0 +1,21 @@
+[project]
+name = "feature_extraction_server-models-gpt4o"
+version = "0.1.0"
+description = "CLIP for FES."
+authors = [
+    {name = "Fynn Faber", email = "fynn.f.faber@proton.me"}
+]
+requires-python = ">=3.11"
+
+dependencies = [
+    "langchain",
+    "langchain-openai",
+    "langchain-community",
+    "tavily-python"
+]
+
+[tool.flit.module]
+name = "feature_extraction_server.models.gpt4o"
+
+[build]
+script = "flit build"
