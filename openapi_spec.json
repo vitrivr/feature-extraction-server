@@ -5,6 +5,578 @@
     "version": "0.1.0"
   },
   "paths": {
+    "/api/legacy/tasks/audio-diarization/{model}/jobs": {
+      "post": {
+        "tags": [
+          "audio-diarization"
+        ],
+        "summary": "New-Job-Results",
+        "operationId": "new_job_results_api_legacy_tasks_audio_diarization__model__jobs_post",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AudioDiarizationInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AudioDiarizationOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/legacy/tasks/conditional-image-captioning/{model}/jobs": {
+      "post": {
+        "tags": [
+          "conditional-image-captioning"
+        ],
+        "summary": "New-Job-Results",
+        "operationId": "new_job_results_api_legacy_tasks_conditional_image_captioning__model__jobs_post",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ConditionalImageCaptioningInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConditionalImageCaptioningOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/legacy/tasks/face-embedding/{model}/jobs": {
+      "post": {
+        "tags": [
+          "face-embedding"
+        ],
+        "summary": "New-Job-Results",
+        "operationId": "new_job_results_api_legacy_tasks_face_embedding__model__jobs_post",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FaceEmbeddingInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FaceEmbeddingOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/legacy/tasks/image-captioning/{model}/jobs": {
+      "post": {
+        "tags": [
+          "image-captioning"
+        ],
+        "summary": "New-Job-Results",
+        "operationId": "new_job_results_api_legacy_tasks_image_captioning__model__jobs_post",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageCaptioningInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageCaptioningOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/legacy/tasks/optical-character-recognition/{model}/jobs": {
+      "post": {
+        "tags": [
+          "optical-character-recognition"
+        ],
+        "summary": "New-Job-Results",
+        "operationId": "new_job_results_api_legacy_tasks_optical_character_recognition__model__jobs_post",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpticalCharacterRecognitionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpticalCharacterRecognitionOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/legacy/tasks/automated-speech-recognition/{model}/jobs": {
+      "post": {
+        "tags": [
+          "automated-speech-recognition"
+        ],
+        "summary": "New-Job-Results",
+        "operationId": "new_job_results_api_legacy_tasks_automated_speech_recognition__model__jobs_post",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutomatedSpeechRecognitionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AutomatedSpeechRecognitionOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/legacy/tasks/image-embedding/{model}/jobs": {
+      "post": {
+        "tags": [
+          "image-embedding"
+        ],
+        "summary": "New-Job-Results",
+        "operationId": "new_job_results_api_legacy_tasks_image_embedding__model__jobs_post",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImageEmbeddingInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImageEmbeddingOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/legacy/tasks/object-detection/{model}/jobs": {
+      "post": {
+        "tags": [
+          "object-detection"
+        ],
+        "summary": "New-Job-Results",
+        "operationId": "new_job_results_api_legacy_tasks_object_detection__model__jobs_post",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ObjectDetectionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectDetectionOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/legacy/tasks/text-embedding/{model}/jobs": {
+      "post": {
+        "tags": [
+          "text-embedding"
+        ],
+        "summary": "New-Job-Results",
+        "operationId": "new_job_results_api_legacy_tasks_text_embedding__model__jobs_post",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TextEmbeddingInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextEmbeddingOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/legacy/tasks/zero-shot-image-classification/{model}/jobs": {
+      "post": {
+        "tags": [
+          "zero-shot-image-classification"
+        ],
+        "summary": "New-Job-Results",
+        "operationId": "new_job_results_api_legacy_tasks_zero_shot_image_classification__model__jobs_post",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ZeroShotImageClassificationInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ZeroShotImageClassificationOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/legacy/tasks/text-query-embedding/{model}/jobs": {
+      "post": {
+        "tags": [
+          "text-query-embedding"
+        ],
+        "summary": "New-Job-Results",
+        "operationId": "new_job_results_api_legacy_tasks_text_query_embedding__model__jobs_post",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TextQueryEmbeddingInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextQueryEmbeddingOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/tasks": {
       "get": {
         "tags": [
@@ -440,194 +1012,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BatchedJobResponseAudioDiarizationOutput"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/tasks/automated-speech-recognition/{model}/jobs": {
-      "post": {
-        "tags": [
-          "automated-speech-recognition"
-        ],
-        "summary": "New-Job",
-        "operationId": "new_job_api_tasks_automated_speech_recognition__model__jobs_post",
-        "parameters": [
-          {
-            "name": "model",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Model"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AutomatedSpeechRecognitionInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JobStatus"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/tasks/automated-speech-recognition/jobs/{job}": {
-      "get": {
-        "tags": [
-          "automated-speech-recognition"
-        ],
-        "summary": "Get-Job-Results",
-        "operationId": "get_job_results_api_tasks_automated_speech_recognition_jobs__job__get",
-        "parameters": [
-          {
-            "name": "job",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Job"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JobResponseAutomatedSpeechRecognitionOutput"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/tasks/automated-speech-recognition/batched/{model}/jobs": {
-      "post": {
-        "tags": [
-          "automated-speech-recognition"
-        ],
-        "summary": "New-Batched-Job",
-        "operationId": "new_batched_job_api_tasks_automated_speech_recognition_batched__model__jobs_post",
-        "parameters": [
-          {
-            "name": "model",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Model"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BatchedAutomatedSpeechRecognitionInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JobStatus"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/tasks/automated-speech-recognition/batched/jobs/{job}": {
-      "get": {
-        "tags": [
-          "automated-speech-recognition"
-        ],
-        "summary": "Get-Batched-Job-Results",
-        "operationId": "get_batched_job_results_api_tasks_automated_speech_recognition_batched_jobs__job__get",
-        "parameters": [
-          {
-            "name": "job",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Job"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BatchedJobResponseAutomatedSpeechRecognitionOutput"
                 }
               }
             }
@@ -1209,6 +1593,382 @@
         }
       }
     },
+    "/api/tasks/optical-character-recognition/{model}/jobs": {
+      "post": {
+        "tags": [
+          "optical-character-recognition"
+        ],
+        "summary": "New-Job",
+        "operationId": "new_job_api_tasks_optical_character_recognition__model__jobs_post",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpticalCharacterRecognitionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/optical-character-recognition/jobs/{job}": {
+      "get": {
+        "tags": [
+          "optical-character-recognition"
+        ],
+        "summary": "Get-Job-Results",
+        "operationId": "get_job_results_api_tasks_optical_character_recognition_jobs__job__get",
+        "parameters": [
+          {
+            "name": "job",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponseOpticalCharacterRecognitionOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/optical-character-recognition/batched/{model}/jobs": {
+      "post": {
+        "tags": [
+          "optical-character-recognition"
+        ],
+        "summary": "New-Batched-Job",
+        "operationId": "new_batched_job_api_tasks_optical_character_recognition_batched__model__jobs_post",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchedOpticalCharacterRecognitionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/optical-character-recognition/batched/jobs/{job}": {
+      "get": {
+        "tags": [
+          "optical-character-recognition"
+        ],
+        "summary": "Get-Batched-Job-Results",
+        "operationId": "get_batched_job_results_api_tasks_optical_character_recognition_batched_jobs__job__get",
+        "parameters": [
+          {
+            "name": "job",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchedJobResponseOpticalCharacterRecognitionOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/automated-speech-recognition/{model}/jobs": {
+      "post": {
+        "tags": [
+          "automated-speech-recognition"
+        ],
+        "summary": "New-Job",
+        "operationId": "new_job_api_tasks_automated_speech_recognition__model__jobs_post",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AutomatedSpeechRecognitionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/automated-speech-recognition/jobs/{job}": {
+      "get": {
+        "tags": [
+          "automated-speech-recognition"
+        ],
+        "summary": "Get-Job-Results",
+        "operationId": "get_job_results_api_tasks_automated_speech_recognition_jobs__job__get",
+        "parameters": [
+          {
+            "name": "job",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponseAutomatedSpeechRecognitionOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/automated-speech-recognition/batched/{model}/jobs": {
+      "post": {
+        "tags": [
+          "automated-speech-recognition"
+        ],
+        "summary": "New-Batched-Job",
+        "operationId": "new_batched_job_api_tasks_automated_speech_recognition_batched__model__jobs_post",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchedAutomatedSpeechRecognitionInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/automated-speech-recognition/batched/jobs/{job}": {
+      "get": {
+        "tags": [
+          "automated-speech-recognition"
+        ],
+        "summary": "Get-Batched-Job-Results",
+        "operationId": "get_batched_job_results_api_tasks_automated_speech_recognition_batched_jobs__job__get",
+        "parameters": [
+          {
+            "name": "job",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchedJobResponseAutomatedSpeechRecognitionOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/tasks/image-embedding/{model}/jobs": {
       "post": {
         "tags": [
@@ -1568,194 +2328,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BatchedJobResponseObjectDetectionOutput"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/tasks/optical-character-recognition/{model}/jobs": {
-      "post": {
-        "tags": [
-          "optical-character-recognition"
-        ],
-        "summary": "New-Job",
-        "operationId": "new_job_api_tasks_optical_character_recognition__model__jobs_post",
-        "parameters": [
-          {
-            "name": "model",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Model"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/OpticalCharacterRecognitionInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JobStatus"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/tasks/optical-character-recognition/jobs/{job}": {
-      "get": {
-        "tags": [
-          "optical-character-recognition"
-        ],
-        "summary": "Get-Job-Results",
-        "operationId": "get_job_results_api_tasks_optical_character_recognition_jobs__job__get",
-        "parameters": [
-          {
-            "name": "job",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Job"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JobResponseOpticalCharacterRecognitionOutput"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/tasks/optical-character-recognition/batched/{model}/jobs": {
-      "post": {
-        "tags": [
-          "optical-character-recognition"
-        ],
-        "summary": "New-Batched-Job",
-        "operationId": "new_batched_job_api_tasks_optical_character_recognition_batched__model__jobs_post",
-        "parameters": [
-          {
-            "name": "model",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Model"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BatchedOpticalCharacterRecognitionInput"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/JobStatus"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation Error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/HTTPValidationError"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/tasks/optical-character-recognition/batched/jobs/{job}": {
-      "get": {
-        "tags": [
-          "optical-character-recognition"
-        ],
-        "summary": "Get-Batched-Job-Results",
-        "operationId": "get_batched_job_results_api_tasks_optical_character_recognition_batched_jobs__job__get",
-        "parameters": [
-          {
-            "name": "job",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "title": "Job"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/BatchedJobResponseOpticalCharacterRecognitionOutput"
                 }
               }
             }
@@ -2148,6 +2720,194 @@
           }
         }
       }
+    },
+    "/api/tasks/text-query-embedding/{model}/jobs": {
+      "post": {
+        "tags": [
+          "text-query-embedding"
+        ],
+        "summary": "New-Job",
+        "operationId": "new_job_api_tasks_text_query_embedding__model__jobs_post",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TextQueryEmbeddingInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/text-query-embedding/jobs/{job}": {
+      "get": {
+        "tags": [
+          "text-query-embedding"
+        ],
+        "summary": "Get-Job-Results",
+        "operationId": "get_job_results_api_tasks_text_query_embedding_jobs__job__get",
+        "parameters": [
+          {
+            "name": "job",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobResponseTextQueryEmbeddingOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/text-query-embedding/batched/{model}/jobs": {
+      "post": {
+        "tags": [
+          "text-query-embedding"
+        ],
+        "summary": "New-Batched-Job",
+        "operationId": "new_batched_job_api_tasks_text_query_embedding_batched__model__jobs_post",
+        "parameters": [
+          {
+            "name": "model",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BatchedTextQueryEmbeddingInput"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobStatus"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tasks/text-query-embedding/batched/jobs/{job}": {
+      "get": {
+        "tags": [
+          "text-query-embedding"
+        ],
+        "summary": "Get-Batched-Job-Results",
+        "operationId": "get_batched_job_results_api_tasks_text_query_embedding_batched_jobs__job__get",
+        "parameters": [
+          {
+            "name": "job",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Job"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BatchedJobResponseTextQueryEmbeddingOutput"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2503,6 +3263,25 @@
         ],
         "title": "BatchedJobResponseTextEmbeddingOutput"
       },
+      "BatchedJobResponseTextQueryEmbeddingOutput": {
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/JobState"
+          },
+          "result": {
+            "items": {
+              "$ref": "#/components/schemas/TextQueryEmbeddingOutput"
+            },
+            "type": "array",
+            "title": "Result"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "BatchedJobResponseTextQueryEmbeddingOutput"
+      },
       "BatchedJobResponseZeroShotImageClassificationOutput": {
         "properties": {
           "status": {
@@ -2581,6 +3360,31 @@
           "text"
         ],
         "title": "BatchedTextEmbeddingInput"
+      },
+      "BatchedTextQueryEmbeddingInput": {
+        "properties": {
+          "query": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Query"
+          },
+          "instruction": {
+            "type": "string",
+            "title": "Instruction"
+          },
+          "config": {
+            "type": "object",
+            "title": "Config"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query",
+          "instruction"
+        ],
+        "title": "BatchedTextQueryEmbeddingInput"
       },
       "BatchedZeroShotImageClassificationInput": {
         "properties": {
@@ -2924,6 +3728,25 @@
         ],
         "title": "JobResponseTextEmbeddingOutput"
       },
+      "JobResponseTextQueryEmbeddingOutput": {
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/JobState"
+          },
+          "result": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TextQueryEmbeddingOutput"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "JobResponseTextQueryEmbeddingOutput"
+      },
       "JobResponseZeroShotImageClassificationOutput": {
         "properties": {
           "status": {
@@ -3117,11 +3940,56 @@
         ],
         "title": "TextEmbeddingOutput"
       },
+      "TextQueryEmbeddingInput": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "instruction": {
+            "type": "string",
+            "title": "Instruction"
+          },
+          "config": {
+            "type": "object",
+            "title": "Config"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query",
+          "instruction"
+        ],
+        "title": "TextQueryEmbeddingInput"
+      },
+      "TextQueryEmbeddingOutput": {
+        "properties": {
+          "embedding": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Embedding"
+          }
+        },
+        "type": "object",
+        "required": [
+          "embedding"
+        ],
+        "title": "TextQueryEmbeddingOutput"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
             "items": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
             },
             "type": "array",
             "title": "Location"
