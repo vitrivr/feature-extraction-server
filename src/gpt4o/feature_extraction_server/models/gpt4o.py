@@ -3,7 +3,7 @@ from feature_extraction_server.core.model import Model
 from simple_plugin_manager.services.settings_manager import SettingsManager
 from simple_plugin_manager.settings import FlagSetting, StringSetting
 import cv2
-from feature_extraction_server.core.dataformat import PngImage
+from feature_extraction_server.core.dataformat import PngImage, OpencvImage
 
 # def downsample_image_opencv(image, max_side_length=32):
     
@@ -48,6 +48,20 @@ class Gpt4o(Model):
         self.no_cuda = no_cuda_setting.get()
 
     def chat_completion(self, user_message, system_message=None, user_image=None, config={}):
+        
+        # reduce image size
+        THRESHOLD = 19 * 1024 * 1024
+        if user_image is not None:
+            estimated_file_size = len(user_image.to_png().to_binary())
+            if estimated_file_size > THRESHOLD:
+                scaling_factor = (THRESHOLD / estimated_file_size) ** 0.5
+                cv2_image = user_image.to_opencv()
+                new_width = int(cv2_image.shape[1] * scaling_factor)
+                new_height = int(cv2_image.shape[0] * scaling_factor)
+                resized_img = cv2.resize(cv2_image, (new_width, new_height), interpolation=cv2.INTER_AREA)
+                user_image = OpencvImage.from_opencv(resized_img)
+                
+            
         
         messages = []
         
