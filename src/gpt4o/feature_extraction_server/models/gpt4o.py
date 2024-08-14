@@ -23,6 +23,8 @@ from feature_extraction_server.core.dataformat import PngImage, OpencvImage
 #     return cv2.resize(image, new_dimensions, interpolation = cv2.INTER_AREA)
 
 class Gpt4o(Model):
+    
+    consumer_type_name = "multi_thread_consumer"
 
 
     def _load_model(self):
@@ -47,7 +49,7 @@ class Gpt4o(Model):
         no_cuda_setting = FlagSetting("NO_CUDA", "If set, the model will not use CUDA.")
         self.no_cuda = no_cuda_setting.get()
 
-    def chat_completion(self, user_message, system_message=None, user_image=None, config={}):
+    def chat_completion(self, user_message, system_message="You are a helpful assist that uses tavily to enhance your responses with information from the internet.", user_image=None, config={}):
         
         # reduce image size
         THRESHOLD = 19 * 1024 * 1024
@@ -66,7 +68,7 @@ class Gpt4o(Model):
         messages = []
         
         if system_message is not None:
-            messages.append(SystemMessage(system_message))
+            messages.append(SystemMessage(content=system_message))
         
         content = [{"type":"text", "text":user_message}]
         if user_image is not None:
