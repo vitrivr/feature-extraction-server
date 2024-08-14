@@ -135,6 +135,7 @@ class BaseApi(Service):
                 model = self._extraction_backend.get_model(model_name = to_snake_case(model))
                 return self._new_job(task, model, dict(data), batched)
             except Exception as e:
+                logger.error(f"Error while creating job: {e}")
                 raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error while creating job: {e}") from e
         return features
     
