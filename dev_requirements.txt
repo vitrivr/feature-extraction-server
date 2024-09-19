@@ -1,4 +1,5 @@
 argparse
+duckduckgo-search
 easyocr
 face_recognition
 fastapi
@@ -19,7 +20,6 @@ python-decouple>=3.8
 soundfile>=0.12.1
 tabulate
 tabulate>=0.9.0
-tavily-python
 torch==2.0
 torchvision
 transformers
