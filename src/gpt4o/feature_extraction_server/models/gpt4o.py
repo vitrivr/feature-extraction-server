@@ -31,17 +31,15 @@ class Gpt4o(Model):
         global HumanMessage, SystemMessage
         from langchain_core.messages import HumanMessage, SystemMessage
         from langchain_openai import ChatOpenAI
-        from langchain_community.tools.tavily_search import TavilySearchResults
         from langchain_core.utils.function_calling import convert_to_openai_function
+        from langchain_community.tools import DuckDuckGoSearchResults
 
-        self.tools = [TavilySearchResults()]
+        self.tools = [DuckDuckGoSearchResults()]
         
         openai_key_setting = StringSetting("OPENAI_API_KEY", "", "The API key for OpenAI.")
-        tavily_key_setting = StringSetting("TAVILY_API_KEY", "", "The API key for Tavily.")
         
         import os
         os.environ["OPENAI_API_KEY"] = openai_key_setting.get()
-        os.environ["TAVILY_API_KEY"] = tavily_key_setting.get()
 
         self.model = ChatOpenAI(model="gpt-4o")
         self.model = self.model.bind_tools(self.tools)
@@ -49,7 +47,7 @@ class Gpt4o(Model):
         no_cuda_setting = FlagSetting("NO_CUDA", "If set, the model will not use CUDA.")
         self.no_cuda = no_cuda_setting.get()
 
-    def chat_completion(self, user_message, system_message="You are a helpful assist that uses tavily to enhance your responses with information from the internet.", user_image=None, config={}):
+    def chat_completion(self, user_message, system_message="You are a helpful assist that uses tools to enhance your responses with information from the internet.", user_image=None, config={}):
         
         # reduce image size
         THRESHOLD = 19 * 1024 * 1024
