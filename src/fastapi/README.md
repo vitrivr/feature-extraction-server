@@ -7,8 +7,8 @@ This plugin adds a REST server using FastAPI. By default, no endpoints are inclu
 
 These plugins add endpoints to this server.
 
-- [This](src/base_api/README.md) plugin extends the server with endpoints that allow the user to create new jobs and get results.
-- [This](src/legacy_api/README.md) plugin defines simpler endpoints that allow the user to both create new jobs and get results in a single 
+- [This](../base_api/README.md) plugin extends the server with endpoints that allow the user to create new jobs and get results.
+- [This](../legacy_api/README.md) plugin defines simpler endpoints that allow the user to both create new jobs and get results in a single 
 
 
 ## Configuration
