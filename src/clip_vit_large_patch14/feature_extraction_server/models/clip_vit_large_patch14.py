@@ -1,6 +1,7 @@
 from collections import OrderedDict
 import hashlib
 from feature_extraction_server.core.model import Model
+import numpy as np
 
 class LRUCache:
     def __init__(self, maxsize=100):
@@ -53,17 +54,17 @@ class ClipVitLargePatch14(Model):
         image_hash = hashlib.md5(image_bytes).hexdigest()
         return image_hash
 
-    def batched_text_embedding(self, text_batch, config={}):
-        results = [None] * len(text_batch)
+    def batched_text_embedding(self, text, config={}):
+        results = [None] * len(text)
         uncached_texts = []
         uncached_indices = []
 
-        for idx, text in enumerate(text_batch):
-            cached_result = self.text_cache.cache_get(text)
+        for idx, t in enumerate(text):
+            cached_result = self.text_cache.cache_get(t)
             if cached_result is not None:
                 results[idx] = cached_result
             else:
-                uncached_texts.append(text)
+                uncached_texts.append(t)
                 uncached_indices.append(idx)
 
         if uncached_texts:
@@ -74,23 +75,23 @@ class ClipVitLargePatch14(Model):
 
             for i, idx in enumerate(uncached_indices):
                 embedding = outputs[i]
-                self.text_cache.cache_set(text_batch[idx], embedding)
+                self.text_cache.cache_set(text[idx], embedding)
                 results[idx] = embedding
 
         return {"embedding": results}
 
-    def batched_image_embedding(self, image_batch, config={}):
-        results = [None] * len(image_batch)
+    def batched_image_embedding(self, image, config={}):
+        results = [None] * len(image)
         uncached_images = []
         uncached_indices = []
 
-        for idx, image in enumerate(image_batch):
-            image_key = self.serialize_image(image)
+        for idx, img in enumerate(image):
+            image_key = self.serialize_image(img)
             cached_result = self.image_cache.cache_get(image_key)
             if cached_result is not None:
                 results[idx] = cached_result
             else:
-                uncached_images.append(image)
+                uncached_images.append(img)
                 uncached_indices.append(idx)
 
         if uncached_images:
@@ -101,15 +102,15 @@ class ClipVitLargePatch14(Model):
 
             for i, idx in enumerate(uncached_indices):
                 embedding = outputs[i]
-                image_key = self.serialize_image(image_batch[idx])
+                image_key = self.serialize_image(image[idx])
                 self.image_cache.cache_set(image_key, embedding)
                 results[idx] = embedding
 
         return {"embedding": results}
 
-    def batched_zero_shot_image_classification(self, image_batch, classes, config={}):
+    def batched_zero_shot_image_classification(self, image, classes, config={}):
         # Cache image embeddings
-        image_embeddings = self.batched_image_embedding(image_batch)["embedding"]
+        image_embeddings = self.batched_image_embedding(image)["embedding"]
         
         # Cache class embeddings
         class_embeddings = self.batched_text_embedding(classes)["embedding"]
