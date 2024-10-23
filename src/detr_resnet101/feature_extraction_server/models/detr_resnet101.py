@@ -1,5 +1,6 @@
 
 from feature_extraction_server.core.model import Model
+from simple_plugin_manager.settings import FlagSetting
 import logging
 logger = logging.getLogger(__name__)
 
@@ -22,6 +23,8 @@ class DetrResnet101(Model):
         self.processor = DetrImageProcessor.from_pretrained("facebook/detr-resnet-101")
         self.model = DetrForObjectDetection.from_pretrained("facebook/detr-resnet-101")
         
+        no_cuda_setting = FlagSetting("NO_CUDA", "If set, the model will not use CUDA.")
+        self.no_cuda = no_cuda_setting.get()
         self.model.eval()
         if is_cuda_available():
             if self.no_cuda:

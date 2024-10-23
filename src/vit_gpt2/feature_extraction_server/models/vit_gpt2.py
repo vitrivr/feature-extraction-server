@@ -1,4 +1,5 @@
 from feature_extraction_server.core.model import Model
+from simple_plugin_manager.settings import FlagSetting
 import logging
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,9 @@ class VitGpt2(Model):
         import torch
         from transformers import VisionEncoderDecoderModel, ViTImageProcessor, AutoTokenizer
         from feature_extraction_server.core.utils import batch
+        
+        no_cuda_setting = FlagSetting("NO_CUDA", "If set, the model will not use CUDA.")
+        self.no_cuda = no_cuda_setting.get()
 
         # Load the model, tokenizer and feature extractor outside the endpoint
         self.model = VisionEncoderDecoderModel.from_pretrained("nlpconnect/vit-gpt2-image-captioning")

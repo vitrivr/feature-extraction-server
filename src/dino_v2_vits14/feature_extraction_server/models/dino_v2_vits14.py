@@ -1,5 +1,6 @@
 
 from feature_extraction_server.core.model import Model
+from simple_plugin_manager.settings import FlagSetting
 import gc
 import logging
 logger = logging.getLogger(__name__)
@@ -21,6 +22,9 @@ class DinoV2Vits14(Model):
         import torch
         import torchvision.transforms as transforms
         import numpy as np
+        
+        no_cuda_setting = FlagSetting("NO_CUDA", "If set, the model will not use CUDA.")
+        self.no_cuda = no_cuda_setting.get()
         
         self.dinov2_model = torch.hub.load('facebookresearch/dinov2', 'dinov2_vits14').eval()
         if is_cuda_available():

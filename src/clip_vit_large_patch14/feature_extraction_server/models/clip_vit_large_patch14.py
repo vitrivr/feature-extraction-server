@@ -1,6 +1,7 @@
 from collections import OrderedDict
 import hashlib
 from feature_extraction_server.core.model import Model
+from simple_plugin_manager.settings import FlagSetting
 import numpy as np
 import logging
 logger = logging.getLogger(__name__)
@@ -46,6 +47,9 @@ class ClipVitLargePatch14(Model):
         from transformers import CLIPModel
         from transformers import AutoTokenizer, AutoProcessor
         import torch.nn.functional as F
+        
+        no_cuda_setting = FlagSetting("NO_CUDA", "If set, the model will not use CUDA.")
+        self.no_cuda = no_cuda_setting.get()
 
         self.model = CLIPModel.from_pretrained("openai/clip-vit-large-patch14")
         self.processor = AutoProcessor.from_pretrained("openai/clip-vit-large-patch14")
