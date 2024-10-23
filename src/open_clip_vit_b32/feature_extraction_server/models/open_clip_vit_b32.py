@@ -3,6 +3,8 @@ from simple_plugin_manager.settings import FlagSetting
 from collections import OrderedDict
 import hashlib
 import gc
+import logging
+logger = logging.getLogger(__name__)
 
 class LRUCache:
     def __init__(self, maxsize=100):
@@ -26,6 +28,16 @@ class LRUCache:
                 self.cache.popitem(last=False)
         self.cache[key] = value
 
+def is_cuda_available():
+    if not torch.cuda.is_available():
+        return False
+    try:
+        # Try to perform a simple CUDA operation
+        torch.zeros(1).to('cuda')
+        return True
+    except Exception:
+        return False
+
 class OpenClipVitB32(Model):
 
     def _load_model(self):
@@ -38,7 +50,16 @@ class OpenClipVitB32(Model):
         no_cuda_setting = FlagSetting("NO_CUDA", "If set, the model will not use CUDA.")
         self.no_cuda = no_cuda_setting.get()
         
-        self.device = torch.device("cuda" if torch.cuda.is_available() and not self.no_cuda else "cpu")
+        if is_cuda_available():
+            if self.no_cuda:
+                logger.debug("CUDA is available but not being used due to --no-cuda setting.")
+                self.device = torch.device("cpu")
+            else:
+                logger.debug("CUDA is available and being used.")
+                self.device = torch.device("cuda")
+        else:
+            logger.debug("CUDA is not available. Using CPU.")
+            self.device = torch.device("cpu")
 
         model, _, preprocess = open_clip.create_model_and_transforms(
             'xlm-roberta-base-ViT-B-32',

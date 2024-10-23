@@ -1,4 +1,16 @@
 from feature_extraction_server.core.model import Model
+import logging
+logger = logging.getLogger(__name__)
+
+def is_cuda_available():
+    if not torch.cuda.is_available():
+        return False
+    try:
+        # Try to perform a simple CUDA operation
+        torch.zeros(1).to('cuda')
+        return True
+    except Exception:
+        return False
 
 class VitGpt2(Model):
 
@@ -15,7 +27,16 @@ class VitGpt2(Model):
         self.tokenizer = AutoTokenizer.from_pretrained("nlpconnect/vit-gpt2-image-captioning")
 
         self.model.eval()
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        if is_cuda_available():
+            if self.no_cuda:
+                logger.debug("CUDA is available but not being used due to --no-cuda setting.")
+                self.device = torch.device("cpu")
+            else:
+                logger.debug("CUDA is available and being used.")
+                self.device = torch.device("cuda")
+        else:
+            logger.debug("CUDA is not available. Using CPU.")
+            self.device = torch.device("cpu")
         self.model.to(self.device)
 
     # Default values for max_length and num_beams

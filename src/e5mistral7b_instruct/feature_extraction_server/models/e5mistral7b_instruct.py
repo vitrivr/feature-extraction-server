@@ -2,6 +2,8 @@ from functools import lru_cache
 from feature_extraction_server.core.model import Model
 from simple_plugin_manager.services.settings_manager import SettingsManager
 from simple_plugin_manager.settings import FlagSetting
+import logging
+logger = logging.getLogger(__name__)
 
 def last_token_pool(last_hidden_states, attention_mask):
     left_padding = (attention_mask[:, -1].sum() == attention_mask.shape[0])
@@ -11,6 +13,16 @@ def last_token_pool(last_hidden_states, attention_mask):
         sequence_lengths = attention_mask.sum(dim=1) - 1
         batch_size = last_hidden_states.shape[0]
         return last_hidden_states[torch.arange(batch_size, device=last_hidden_states.device), sequence_lengths]
+
+def is_cuda_available():
+    if not torch.cuda.is_available():
+        return False
+    try:
+        # Try to perform a simple CUDA operation
+        torch.zeros(1).to('cuda')
+        return True
+    except Exception:
+        return False
 
 class E5mistral7bInstruct(Model):
 
@@ -28,7 +40,16 @@ class E5mistral7bInstruct(Model):
         self.tokenizer = AutoTokenizer.from_pretrained('intfloat/e5-mistral-7b-instruct')
         
         self.model.eval()
-        self.device = torch.device("cuda" if torch.cuda.is_available() and not self.no_cuda else "cpu")
+        if is_cuda_available():
+            if self.no_cuda:
+                logger.debug("CUDA is available but not being used due to --no-cuda setting.")
+                self.device = torch.device("cpu")
+            else:
+                logger.debug("CUDA is available and being used.")
+                self.device = torch.device("cuda")
+        else:
+            logger.debug("CUDA is not available. Using CPU.")
+            self.device = torch.device("cpu")
         self.model.to(self.device)
 
     @lru_cache(maxsize=100)

@@ -1,7 +1,18 @@
 
 from feature_extraction_server.core.model import Model
 import gc
+import logging
+logger = logging.getLogger(__name__)
 
+def is_cuda_available():
+    if not torch.cuda.is_available():
+        return False
+    try:
+        # Try to perform a simple CUDA operation
+        torch.zeros(1).to('cuda')
+        return True
+    except Exception:
+        return False
 class DinoV2Vits14(Model):
 
     def _load_model(self):
@@ -12,7 +23,16 @@ class DinoV2Vits14(Model):
         import numpy as np
         
         self.dinov2_model = torch.hub.load('facebookresearch/dinov2', 'dinov2_vits14').eval()
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        if is_cuda_available():
+            if self.no_cuda:
+                logger.debug("CUDA is available but not being used due to --no-cuda setting.")
+                self.device = torch.device("cpu")
+            else:
+                logger.debug("CUDA is available and being used.")
+                self.device = torch.device("cuda")
+        else:
+            logger.debug("CUDA is not available. Using CPU.")
+            self.device = torch.device("cpu")
         self.dinov2_model = self.dinov2_model.to(self.device)
         self.dinov2_model.eval()
 
