@@ -93,7 +93,7 @@ class ClipVitLargePatch14(Model):
                 uncached_indices.append(idx)
 
         if uncached_texts:
-            inputs = self.tokenizer(uncached_texts, padding=True, return_tensors="pt").to(self.device)
+            inputs = self.tokenizer(uncached_texts, padding=True, return_tensors="pt", truncation=True).to(self.device)
             with torch.no_grad():
                 outputs = self.model.get_text_features(**inputs)
             outputs = F.normalize(outputs, p=2, dim=-1).cpu().tolist()
