@@ -8,10 +8,10 @@ authors = [
 requires-python = ">=3.11"
 
 dependencies = [
-    "langchain",
-    "langchain-openai",
-    "langchain-community",
-    "duckduckgo-search"
+    "langchain==0.2.6",
+    "langchain-openai==0.1.14",
+    "langchain-community==0.2.6",
+    "duckduckgo-search==6.2.7"
 ]
 
 [tool.flit.module]

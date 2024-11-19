@@ -9,7 +9,7 @@ requires-python = ">=3.11"
 
 dependencies = [
     "torch==2.0",
-    "torchvision"
+    "torchvision==0.15.1"
 ]
 
 [tool.flit.module]

@@ -2,32 +2,9 @@
 
 This server can accept various media as input and performs various AI tasks, such as image captioning. It features an extensible plugin system that allows new tasks and models to be easily added. The purpose of this server is to maintain a uniform input / output specification for each AI task, regardless of the specifics of the model used. This allows models to be swapped more easily.
 
-## Run the Server from Source
-
-1. **Clone the Repository**
-2. **Install Python 3.11**
-3. **Install the Required Packages:**
-    ```bash
-    pip install -r dev_requirements.txt
-    ```
-    Note: This includes all the dependencies for all plugins, so this can take a while. Alternatively, you can only install the dependencies you require as needed.
-4. **Add the Desired Plugins to the Path**
-   For example:
-   ```bash
-   export PYTHONPATH=src/core:src/legacy_api:src/audio_diarization:src/blip:src/conditional_image_captioning:src/face_embedding:src/image_captioning:src/optical_character_recognition:src/simple_plugin_manager:src/vit_gpt2:src/automated_speech_recognition:src/blip2:src/detr_resnet101:src/face_recognition:src/image_embedding:src/owl_vit_base_patch32:src/tesseract:src/whisper:src/base_api:src/clip_vit_large_patch14:src/easy_ocr:src/fastapi:src/object_detection:src/pyannote:src/text_embedding:src/zero_shot_image_classification:$PYTHONPATH
-   export LOG_LEVEL=DEBUG
-
-   ```
-5. **Run the Server:**
-
-    To run the server, use the entrypoint:
-
-    ```bash
-   python run_dev_server.py --port 8888
-    ```
 ## Manually Install the Server
 
-This is currently not tested.
+This is the recommended way to install the server.
 
 1. **Clone the Repository**
 2. **Install Python 3.11**
@@ -52,10 +29,37 @@ This is currently not tested.
    cd src/example_plugin
    flit install
    ```
+   Remember that for a model to be usable at least one task plugin must also be installed. (For example text-embedding may be installed to use open-clip-vit-b32.)
 6. **Run the Server**
    ```bash
    run-fes --port 8888
    ```
+
+## Run the Server from Source
+
+This is the recommended way to install the server if you are developing the FES.
+
+1. **Clone the Repository**
+2. **Install Python 3.11**
+3. **Install the Required Packages:**
+    ```bash
+    pip install -r dev_requirements.txt
+    ```
+    Note: This includes all the dependencies for all plugins, so this can take a while. Alternatively, you can only install the dependencies you require as needed. (Check the pyproject.toml files of the plugins you need.)
+4. **Add the Desired Plugins to the Path**
+   For example:
+   ```bash
+   export PYTHONPATH=src/core:src/legacy_api:src/audio_diarization:src/blip:src/conditional_image_captioning:src/face_embedding:src/image_captioning:src/optical_character_recognition:src/simple_plugin_manager:src/vit_gpt2:src/automated_speech_recognition:src/blip2:src/detr_resnet101:src/face_recognition:src/image_embedding:src/owl_vit_base_patch32:src/tesseract:src/whisper:src/base_api:src/clip_vit_large_patch14:src/easy_ocr:src/fastapi:src/object_detection:src/pyannote:src/text_embedding:src/zero_shot_image_classification:$PYTHONPATH
+   export LOG_LEVEL=DEBUG
+
+   ```
+5. **Run the Server:**
+
+    To run the server, use the entrypoint:
+
+    ```bash
+   python run_dev_server.py --port 8888
+    ```
 
 ## Run the Server with Docker
 

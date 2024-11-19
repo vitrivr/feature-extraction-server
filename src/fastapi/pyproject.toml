@@ -8,8 +8,8 @@ authors = [
 requires-python = ">=3.11"
 
 dependencies = [
-    "fastapi",
-    "uvicorn"
+    "fastapi==0.111",
+    "uvicorn==0.30.0"
 ]
 
 [tool.flit.module]
