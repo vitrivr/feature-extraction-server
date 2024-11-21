@@ -10,7 +10,7 @@ requires-python = ">=3.11"
 dependencies = [
     "openai-whisper",
     "pydub", 
-    "numpy"
+    "numpy==1.26.4"
 ]
 
 [tool.flit.module]

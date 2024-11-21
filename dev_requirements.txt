@@ -1,13 +1,13 @@
 argparse
+dlib==19.24.4
 duckduckgo-search==6.2.7
 easyocr==1.7.1
 face_recognition==1.3.0
-dlib==19.24.4
 fastapi==0.111
 langchain==0.2.6
 langchain-community==0.2.6
 langchain-openai==0.1.14
-numpy
+numpy==1.26.4
 open_clip_torch==2.24.0
 openai-whisper
 opencv-python>=4.9
