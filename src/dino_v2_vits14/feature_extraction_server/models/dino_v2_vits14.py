@@ -50,6 +50,7 @@ class DinoV2Vits14(Model):
     
     def batched_image_embedding(self, image, config={}):
         img = np.array([self.transform_image(x.to_numpy())[:3] for x in image])
+        img_tensor = torch.from_numpy(img).to(self.device)  # Move tensor to the correct device
         with torch.no_grad():
             gc.collect()
-            return {"embedding":self.dinov2_model(torch.from_numpy(img)).tolist()}
+            return {"embedding": self.dinov2_model(img_tensor).tolist()}
