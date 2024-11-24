@@ -13,8 +13,8 @@ dependencies = [
     "tabulate"
 ]
 
-[tool.flit.module]
-name = "simple_plugin_manager"
+[tool.setuptools]
+packages = ["simple_plugin_manager"]
 
 [build]
 script = "flit build"

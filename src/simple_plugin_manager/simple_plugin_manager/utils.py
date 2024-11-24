@@ -1,5 +1,6 @@
 import inspect
 import functools
+import importlib, pkgutil
 
 def convert_to_camel_case(s):
     # Split the string by underscore and capitalize each segment
@@ -49,7 +50,8 @@ def get_annotations_with_inheritance(func):
 
     # Retrieve and return annotations
     if inspect.isfunction(method) or inspect.ismethod(method):
-        return {key:val.annotation for key, val in inspect.signature(method).parameters.items()}
+        return {key:val.annotation for key, val in inspect.signature(method,eval_str=True).parameters.items() if not val.annotation is inspect.Parameter.empty}
+    return {}
 
 def can_call_with_kwargs(func, kwargs):
     sig = inspect.signature(func)
@@ -60,9 +62,37 @@ def can_call_with_kwargs(func, kwargs):
         if param.default is inspect.Parameter.empty and name not in kwargs:
             return False
 
+    rm_args = []
     # Check for extra arguments that the function does not accept
     for kw in kwargs:
         if kw not in parameters:
-            return False
+            rm_args.append(kw)
+    for kw in rm_args:
+        del kwargs[kw]
 
     return True
+
+def import_all_modules_in_namespace(namespace):
+        try:
+            ns_pkg = importlib.import_module(namespace)
+        except ModuleNotFoundError:
+            return
+        
+        for module in pkgutil.iter_modules(ns_pkg.__path__, ns_pkg.__name__ + "."):
+            importlib.import_module(module.name)
+            
+
+
+# def myfunc(a: int, b: str) -> float:
+#     return float(a)
+
+
+# class MyClass:
+#     def my_method(self, a: int, b: str) -> float:
+#         return float(a)
+
+# output = get_annotations_with_inheritance(myfunc)
+
+# output2 = get_annotations_with_inheritance(MyClass.my_method)
+
+# print(output)

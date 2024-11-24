@@ -1,15 +1,6 @@
 
 from argparse import ArgumentParser
-from decouple import UndefinedValueError
-
-from decouple import Config, RepositoryEnv
-#from decouple import config
-
-import os
-if os.path.exists("./.env"):
-    config = Config(RepositoryEnv("./.env"))
-else:
-    from decouple import config
+from decouple import config, UndefinedValueError
 
 import abc
 from simple_plugin_manager.exceptions import InvalidConfigurationException, MissingConfigurationException
@@ -91,7 +82,8 @@ class FlagSetting(Setting):
         ap.add_argument(f'--{self.lower_name_dash}', dest=self.upper_name, action='store_true')
         args, unknown = ap.parse_known_args()
         if self.upper_name in vars(args):
-            return vars(args)[self.upper_name]
+            if vars(args)[self.upper_name]:
+                return True
         return NoValue
     
     def check(self, value):
