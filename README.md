@@ -32,7 +32,7 @@ This is the recommended way to install the server.
    Remember that for a model to be usable at least one task plugin must also be installed. (For example text-embedding may be installed to use open-clip-vit-b32.)
 6. **Run the Server**
    ```bash
-   run-fes --port 8888
+   run-fes --port 8888 --log-level=DEBUG
    ```
 
 ## Run the Server from Source
